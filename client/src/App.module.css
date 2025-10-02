@@ -1,0 +1,72 @@
+
+.MainContainer {
+    height: 100vh;
+    width: 100vw;
+}
+
+.titleContainer {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    height: 10%;
+    width: 100%;
+
+
+    background-color: #104365;
+
+    position: relative;
+    z-index: 2;
+
+    h1 {
+        margin: 0;
+        color: #FFFF;
+    }
+
+    img {
+
+        margin-left: 1rem;
+        transition: transform 0.3s ease-in-out;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    img.rotate {
+        transform: rotate(180deg);
+    }
+}
+
+.DataContainer {
+    height: 85%;
+    width: 95%;
+
+    margin-top: 1rem;
+
+    justify-self: center;
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+
+.ToggleContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+    margin-right: 1rem;
+
+    gap: 0.2rem;
+
+    h3 {
+        color: white;
+        font-weight: normal;
+        font-size: 0.9rem;
+        margin: 0.2rem 0 0 0;
+    }
+}
