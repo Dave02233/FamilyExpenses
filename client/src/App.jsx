@@ -1,7 +1,9 @@
-import { useState } from 'react'
-import styles from './App.module.css'
-import { Toggle } from './Components/Toggle'
-import { SideBar } from './Components/SideBar'
+import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import styles from './App.module.css';
+import { Toggle } from './Components/Toggle';
+import { SideBar } from './Components/SideBar';
+
 
 function App() {
 
@@ -27,11 +29,9 @@ function App() {
 
       </header> 
       <SideBar open={sideBar}/>
-      <div className={styles.DataContainer}>
-
-      </div>
+      <Outlet />
     </main>
   )
 }
 
-export default App
+export default App;
