@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import styles from './Styles/Dashboard.module.css';
 
 const data = [
@@ -10,21 +10,49 @@ const data = [
     { name: 'Giu', Davide: 140, Alessia: 180, Chiara: 100 },
 ];
 
+const pieData = [
+    { name: 'Sigarette', value: 720, fill: '#8884d8' },
+    { name: 'Spesa', value: 1020, fill: '#82ca9d' },
+    { name: 'Vestiti', value: 450, fill: '#ffc658' },
+];
+
 export const Dashboard = () => {
     return (
         <>
             <div className={styles.ChartContainer}>
-                <h2>Spese Mensili</h2>
-                <ResponsiveContainer>
+                <div className={styles.BarChartContainer}>
+                    <h2>Spese Mensili</h2>
+                    <ResponsiveContainer>
                     <BarChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Bar dataKey="Davide" stackId="a" fill="#8884d8" />
+                            <Bar dataKey="Alessia" stackId="a" fill="#82ca9d" />
+                            <Bar dataKey="Chiara" stackId="a" fill="#ffc658" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+          
+
+                <ResponsiveContainer>
+                        <PieChart>
+                        <Pie 
+                            data={pieData} 
+                            dataKey="value" 
+                            nameKey="name" 
+                            cx="50%" 
+                            cy="50%" 
+                            outerRadius={80} 
+                            label
+                        >
+                            {pieData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.fill} />
+                            ))}
+                        </Pie>
                         <Tooltip />
-                        <Bar dataKey="Davide" stackId="a" fill="#8884d8" />
-                        <Bar dataKey="Alessia" stackId="a" fill="#82ca9d" />
-                        <Bar dataKey="Chiara" stackId="a" fill="#ffc658" />
-                    </BarChart>
+                    </PieChart>
                 </ResponsiveContainer>
             </div>
         </>
