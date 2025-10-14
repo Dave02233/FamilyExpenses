@@ -20,17 +20,19 @@
 
     position: relative;
     z-index: 2;
+    transition: all 0.3s ease;
 }
 
 .titleContainer h1 {
     margin: 0;
     color: #FFFF;
     font-size: 1.5rem;
+    transition: font-size 0.3s ease;
 }
 
 .titleContainer img {
     margin-left: 0;
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out, width 0.3s ease, height 0.3s ease;
     cursor: pointer;
 }
 
@@ -39,30 +41,69 @@
 }
 
 /* Media queries per mobile */
+@media (max-width: 1200px) {
+    .titleContainer h1 {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .titleContainer {
+        height: 9vh;
+        padding: 0 0.9rem;
+    }
+    
+    .titleContainer h1 {
+        font-size: 1.35rem;
+    }
+}
+
 @media (max-width: 768px) {
     .titleContainer {
+        height: 8vh;
         padding: 0 0.75rem;
     }
     
     .titleContainer h1 {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
+    }
+
+    .titleContainer img {
+        width: 28px;
+        height: 28px;
     }
 }
 
 @media (max-width: 480px) {
     .titleContainer {
+        height: 7vh;
         padding: 0 0.5rem;
     }
     
     .titleContainer h1 {
-        font-size: 1.1rem;
+        font-size: 1rem;
+    }
+
+    .titleContainer img {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+@media (max-width: 360px) {
+    .titleContainer h1 {
+        font-size: 0.9rem;
+    }
+
+    .titleContainer img {
+        width: 20px;
+        height: 20px;
     }
 }
 
 .ContentWrapper {
     display: flex;
     flex: 1;
-    height: 90vh; /* Altezza totale - header (100vh - 10vh) */
     overflow: hidden;
 }
 

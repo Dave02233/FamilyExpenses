@@ -13,10 +13,11 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {index: true, element: <Dashboard />},
-      {path: 'profile', element: <Profile />},
+      {path: 'profile/:user', element: <Profile />},
       {path: 'newProfile', element: <NewProfile />}
     ]
   }
+
 ])
 
 createRoot(document.getElementById('root')).render(

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Styles/SideBar.module.css'
 
 export const SideBar = ({ open }) => {
@@ -8,14 +9,12 @@ export const SideBar = ({ open }) => {
     }, [open])
 
     const [visibility, setVisibility] = useState(false);
+    const navigate = useNavigate();
 
-    const checkExpenses = (num) => {
-        if(num <= 0){
-            return '.red';
-        } else {
-            return '.green';
-        }
-    }
+    const handleUserClick = (userName) => {
+        setVisibility(false);
+        navigate(`/profile/${userName}`);
+    } 
 
     const users = [
         {
@@ -41,12 +40,12 @@ export const SideBar = ({ open }) => {
                 users
                 .map((user, i) => {
                     return (
-                        <div key={i} className={styles.userPreview}>
+                        <div key={i} className={styles.userPreview} onClick={()=>handleUserClick(user.name)}>
                             <div className={styles.personalData}>
                                 <img src={user.img} alt="Profile Picture" />
                                 <h3>{user.name}</h3>
                             </div>
-                            <p className={user.monthlyExpendables < 0 ? styles.negative : ''}>
+                            <p className={user.monthlyExpendables <= 0 ? styles.negative : ''}>
                                 {user.monthlyExpendables.toFixed(2)} €
                             </p>
                         </div>

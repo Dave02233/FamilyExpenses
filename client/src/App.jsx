@@ -12,8 +12,6 @@ function App() {
     setSideBar(prev => !prev)
   };
 
-  const [nightMode, setNightMode] = useState(true);
-
   return (
     <main className={styles.MainContainer}>
       <header className={styles.titleContainer}>

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import styles from './Styles/Dashboard.module.css';
 
@@ -16,13 +17,74 @@ const pieData = [
     { name: 'Vestiti', value: 450, fill: '#ffc658' },
 ];
 
+const users = [
+    'Alessia',
+    'Chiara',
+    'Davide',
+]
+
 const formatCurrency = (value) => `${value}€`;
 
 export const Dashboard = () => {
+    const [filterType, setFilterType] = useState('1mese');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+
+    const handleFilterChange = (e) => {
+        setFilterType(e.target.value);
+        if (e.target.value !== 'custom') {
+            setStartDate('');
+            setEndDate('');
+        }
+    };
     return (
         <>
             <div className={styles.ChartContainer}>
+                <div className={styles.FilterContainer}>
+                    <div className={styles.FilterGroup}>
+                        <label htmlFor="filterType">Periodo:</label>
+                        <select 
+                            id="filterType"
+                            value={filterType} 
+                            onChange={handleFilterChange}
+                            className={styles.FilterSelect}
+                        >
+                            <option value="1mese">1 Mese</option>
+                            <option value="3mesi">3 Mesi</option>
+                            <option value="1anno">1 Anno</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+
+                    {filterType === 'custom' && (
+                        <div className={styles.CustomDateContainer}>
+                            <div className={styles.DateGroup}>
+                                <label htmlFor="startDate">Da:</label>
+                                <input 
+                                    type="month"
+                                    id="startDate"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className={styles.DateInput}
+                                />
+                            </div>
+                            <div className={styles.DateGroup}>
+                                <label htmlFor="endDate">A:</label>
+                                <input 
+                                    type="month"
+                                    id="endDate"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className={styles.DateInput}
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 <div className={styles.BarChartContainer}>
+                    
+
                     <div className={styles.ChartHeader}>
                         <h2>💰 Spese Mensili</h2>
                         <span className={styles.ChartSubtitle}>Confronto per membro della famiglia</span>
@@ -30,7 +92,7 @@ export const Dashboard = () => {
                     <ResponsiveContainer className={styles.ResponsiveContainer}>
                         <BarChart 
                             data={data} 
-                            margin={{ top: 10, right: 15, left: 10, bottom: 5 }}
+                            margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
                             barCategoryGap="15%"
                         >
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
@@ -71,16 +133,15 @@ export const Dashboard = () => {
                         <h2>📊 Categorie di Spesa</h2>
                         <span className={styles.ChartSubtitle}>Distribuzione per categoria</span>
                     </div>
-                    <ResponsiveContainer>
-                        <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                    <ResponsiveContainer width="100%" height={400}>
+                        <PieChart margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
                             <Pie 
                                 data={pieData} 
                                 dataKey="value" 
                                 nameKey="name" 
-                                cx="50%" 
-                                cy="50%" 
-                                innerRadius="20%" 
-                                outerRadius="35%" 
+                                cx="50%"  
+                                innerRadius="40%" 
+                                outerRadius="75%" 
                                 animationDuration={1000}
                                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                 labelLine={false}
@@ -103,6 +164,49 @@ export const Dashboard = () => {
                             />
                         </PieChart>
                     </ResponsiveContainer>
+
+                    {/* Pie charts per utente */}
+                    <div className={styles.UserPieChartsContainer}>
+                        {users.map((user) => (
+                            <div key={user} className={styles.SmallPieChartContainer}>
+                                <div className={styles.ChartHeader}>
+                                    <h3>{user}</h3>
+                                </div>
+                                <ResponsiveContainer width="100%" height={200}>
+                                    <PieChart>
+                                        <Pie 
+                                            data={pieData} 
+                                            dataKey="value" 
+                                            nameKey="name" 
+                                            cx="50%"  
+                                            cy="50%"
+                                            innerRadius="40%" 
+                                            outerRadius="85%" 
+                                            animationDuration={1000}
+                                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                            labelLine={false}
+                                        >
+                                            {pieData.map((entry, index) => (
+                                                <Cell key={`cell-${user}-${index}`} fill={entry.fill} stroke="rgba(255,255,255,0.1)" strokeWidth={2} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip 
+                                            formatter={(value, name) => [formatCurrency(value), name]}
+                                            contentStyle={{
+                                                backgroundColor: 'rgba(30, 30, 30, 0.95)',
+                                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                                borderRadius: '8px',
+                                                color: '#ffffff',
+                                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+                                            }}
+                                            labelStyle={{ color: '#ffffff' }}
+                                            itemStyle={{ color: '#ffffff' }}
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </>
