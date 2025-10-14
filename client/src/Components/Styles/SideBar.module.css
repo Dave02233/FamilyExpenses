@@ -1,16 +1,12 @@
 
 .SideBarContainer {
-    position: fixed;
-    top: 10vh;
-    left: 0;
-    z-index: 1000;
-
-    width: 300px;
-    height: calc(100vh - 10vh);
+    width: 280px;
+    height: 100%;
+    flex-shrink: 0;
     
     display: flex;
     flex-direction: column;
-    padding: 1rem 0;
+    padding: 1rem;
 
     background-color: rgba(30, 30, 30, 0.95);
     -webkit-backdrop-filter: blur(10px) saturate(100%);
@@ -19,9 +15,30 @@
     border-right: 2px solid rgba(255, 255, 255, 0.1);
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
 
-    transition: transform 0.3s ease-in-out;
     overflow-y: auto;
-    
+}
+
+/* Media queries per dispositivi mobili */
+@media (max-width: 768px) {
+    .SideBarContainer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 85vw;
+        max-width: 320px;
+        height: 100%;
+        padding: 0.75rem;
+        z-index: 1000;
+        transform: translateX(0);
+        transition: transform 0.3s ease-in-out;
+    }
+}
+
+@media (max-width: 480px) {
+    .SideBarContainer {
+        width: 90vw;
+        padding: 0.5rem;
+    }
 }
 
 .userPreview {
@@ -34,6 +51,22 @@
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
     transition: background-color 0.2s ease;
+}
+
+@media (max-width: 768px) {
+    .userPreview {
+        padding: 0.75rem;
+        margin: 0.25rem 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .userPreview {
+        padding: 0.5rem;
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
 }
 
 .userPreview:hover {
@@ -53,6 +86,7 @@
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.1);
     padding: 8px;
+    flex-shrink: 0;
 }
 
 .personalData h3 {
@@ -60,6 +94,30 @@
     margin: 0;
     font-size: 1.1rem;
     font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .personalData img {
+        width: 36px;
+        height: 36px;
+        padding: 6px;
+    }
+    
+    .personalData h3 {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .personalData img {
+        width: 32px;
+        height: 32px;
+        padding: 4px;
+    }
+    
+    .personalData h3 {
+        font-size: 0.9rem;
+    }
 }
 
 .userPreview p {
@@ -79,12 +137,15 @@
 
 
 
-.open {
-    transform: translateX(0);
-}
-
-.closed {
-    transform: translateX(-100%);
+/* Animazioni solo su mobile */
+@media (max-width: 768px) {
+    .open {
+        transform: translateX(0);
+    }
+    
+    .closed {
+        transform: translateX(-100%);
+    }
 }
 
 /* Aggiungiamo uno stile per le spese negative (rosse) */

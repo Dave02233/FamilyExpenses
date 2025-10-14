@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import styles from './App.module.css';
-import { Toggle } from './Components/Toggle';
 import { SideBar } from './Components/SideBar';
 
 
@@ -22,14 +21,16 @@ function App() {
         <h1>Spese Familiari</h1>
         <div className={styles.ToggleContainer}>
         
-        <h3>Modalità notte</h3>
-        <Toggle state={nightMode} toggleFunction={setNightMode}/>
         
         </div>
-
       </header> 
-      <SideBar open={sideBar}/>
-      <Outlet />
+      
+      <div className={styles.ContentWrapper}>
+        {sideBar && <SideBar open={sideBar}/>}
+        <div className={styles.MainContent}>
+          <Outlet />
+        </div>
+      </div>
     </main>
   )
 }

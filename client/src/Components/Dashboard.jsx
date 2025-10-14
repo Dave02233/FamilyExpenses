@@ -23,13 +23,42 @@ export const Dashboard = () => {
         <>
             <div className={styles.ChartContainer}>
                 <div className={styles.BarChartContainer}>
-                    <h2>Spese Mensili</h2>
+                    <div className={styles.ChartHeader}>
+                        <h2>💰 Spese Mensili</h2>
+                        <span className={styles.ChartSubtitle}>Confronto per membro della famiglia</span>
+                    </div>
                     <ResponsiveContainer className={styles.ResponsiveContainer}>
-                        <BarChart data={data}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip formatter={(value) => formatCurrency(value)} />
+                        <BarChart 
+                            data={data} 
+                            margin={{ top: 10, right: 15, left: 10, bottom: 5 }}
+                            barCategoryGap="15%"
+                        >
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                            <XAxis 
+                                dataKey="name" 
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fill: '#ffffff', fontSize: 12 }}
+                            />
+                            <YAxis 
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fill: '#ffffff', fontSize: 12 }}
+                                tickFormatter={(value) => `${value}€`}
+                            />
+                            <Tooltip 
+                                formatter={(value, name) => [formatCurrency(value), name]}
+                                contentStyle={{
+                                    backgroundColor: 'rgba(30, 30, 30, 0.95)',
+                                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                                    borderRadius: '8px',
+                                    color: '#ffffff',
+                                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+                                }}
+                                labelStyle={{ color: '#ffffff' }}
+                                itemStyle={{ color: '#ffffff' }}
+                                cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                            />
                             <Bar dataKey="Davide" stackId="a" fill="#8884d8" />
                             <Bar dataKey="Alessia" stackId="a" fill="#82ca9d" />
                             <Bar dataKey="Chiara" stackId="a" fill="#ffc658" />
@@ -38,22 +67,40 @@ export const Dashboard = () => {
                 </div>
           
                 <div className={styles.PieChartContainer}>
+                    <div className={styles.ChartHeader}>
+                        <h2>📊 Categorie di Spesa</h2>
+                        <span className={styles.ChartSubtitle}>Distribuzione per categoria</span>
+                    </div>
                     <ResponsiveContainer>
-                            <PieChart>
+                        <PieChart>
                             <Pie 
                                 data={pieData} 
                                 dataKey="value" 
                                 nameKey="name" 
                                 cx="50%" 
                                 cy="50%" 
-                                outerRadius={'100%'} 
-                                label
+                                innerRadius={40}
+                                outerRadius={120} 
+                                animationDuration={1000}
+                                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                labelLine={false}
                             >
                                 {pieData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                    <Cell key={`cell-${index}`} fill={entry.fill} stroke="rgba(255,255,255,0.1)" strokeWidth={2} />
                                 ))}
                             </Pie>
-                            <Tooltip formatter={(value) => formatCurrency(value)} />
+                            <Tooltip 
+                                formatter={(value, name) => [formatCurrency(value), name]}
+                                contentStyle={{
+                                    backgroundColor: 'rgba(30, 30, 30, 0.95)',
+                                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                                    borderRadius: '8px',
+                                    color: '#ffffff',
+                                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+                                }}
+                                labelStyle={{ color: '#ffffff' }}
+                                itemStyle={{ color: '#ffffff' }}
+                            />
                         </PieChart>
                     </ResponsiveContainer>
                 </div>

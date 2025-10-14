@@ -2,55 +2,90 @@
 .MainContainer {
     height: 100vh;
     width: 100vw;
+    display: flex;
+    flex-direction: column;
 }
 
 .titleContainer {
-
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-    height: 10%;
+    height: 10vh;
     width: 100%;
-
+    padding: 0 1rem;
+    box-sizing: border-box;
 
     background-color: #104365;
 
     position: relative;
     z-index: 2;
+}
 
-    h1 {
-        margin: 0;
-        color: #FFFF;
+.titleContainer h1 {
+    margin: 0;
+    color: #FFFF;
+    font-size: 1.5rem;
+}
+
+.titleContainer img {
+    margin-left: 0;
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.titleContainer img.rotate {
+    transform: rotate(180deg);
+}
+
+/* Media queries per mobile */
+@media (max-width: 768px) {
+    .titleContainer {
+        padding: 0 0.75rem;
     }
-
-    img {
-
-        margin-left: 1rem;
-        transition: transform 0.3s ease-in-out;
-
-        &:hover {
-            cursor: pointer;
-        }
-    }
-
-    img.rotate {
-        transform: rotate(180deg);
+    
+    .titleContainer h1 {
+        font-size: 1.3rem;
     }
 }
 
-.DataContainer {
-    height: 85%;
-    width: 95%;
+@media (max-width: 480px) {
+    .titleContainer {
+        padding: 0 0.5rem;
+    }
+    
+    .titleContainer h1 {
+        font-size: 1.1rem;
+    }
+}
 
-    margin-top: 1rem;
-
-    justify-self: center;
-    align-self: center;
+.ContentWrapper {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex: 1;
+    height: 90vh; /* Altezza totale - header (100vh - 10vh) */
+    overflow: hidden;
+}
 
+.MainContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+@media (max-width: 768px) {
+    .ContentWrapper {
+        position: relative;
+    }
+    
+    .MainContent {
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .MainContent {
+        padding: 0.5rem;
+    }
 }
 
 
@@ -59,14 +94,29 @@
     flex-direction: column;
     align-items: center;
     width: fit-content;
-    margin-right: 1rem;
-
     gap: 0.2rem;
+}
 
-    h3 {
-        color: white;
-        font-weight: normal;
-        font-size: 0.9rem;
-        margin: 0.2rem 0 0 0;
+.ToggleContainer h3 {
+    color: white;
+    font-weight: normal;
+    font-size: 0.9rem;
+    margin: 0.2rem 0 0 0;
+}
+
+@media (max-width: 768px) {
+    .ToggleContainer h3 {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ToggleContainer {
+        gap: 0.1rem;
+    }
+    
+    .ToggleContainer h3 {
+        font-size: 0.7rem;
+        display: none; /* Nascondi il testo su schermi molto piccoli */
     }
 }
