@@ -72,15 +72,15 @@ export const Dashboard = () => {
                         <span className={styles.ChartSubtitle}>Distribuzione per categoria</span>
                     </div>
                     <ResponsiveContainer>
-                        <PieChart>
+                        <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                             <Pie 
                                 data={pieData} 
                                 dataKey="value" 
                                 nameKey="name" 
                                 cx="50%" 
                                 cy="50%" 
-                                innerRadius={40}
-                                outerRadius={120} 
+                                innerRadius="20%" 
+                                outerRadius="35%" 
                                 animationDuration={1000}
                                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                 labelLine={false}
