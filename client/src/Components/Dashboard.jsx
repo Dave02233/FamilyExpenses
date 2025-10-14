@@ -16,18 +16,20 @@ const pieData = [
     { name: 'Vestiti', value: 450, fill: '#ffc658' },
 ];
 
+const formatCurrency = (value) => `${value}€`;
+
 export const Dashboard = () => {
     return (
         <>
             <div className={styles.ChartContainer}>
                 <div className={styles.BarChartContainer}>
                     <h2>Spese Mensili</h2>
-                    <ResponsiveContainer>
-                    <BarChart data={data}>
+                    <ResponsiveContainer className={styles.ResponsiveContainer}>
+                        <BarChart data={data}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
                             <YAxis />
-                            <Tooltip />
+                            <Tooltip formatter={(value) => formatCurrency(value)} />
                             <Bar dataKey="Davide" stackId="a" fill="#8884d8" />
                             <Bar dataKey="Alessia" stackId="a" fill="#82ca9d" />
                             <Bar dataKey="Chiara" stackId="a" fill="#ffc658" />
@@ -35,25 +37,26 @@ export const Dashboard = () => {
                     </ResponsiveContainer>
                 </div>
           
-
-                <ResponsiveContainer>
-                        <PieChart>
-                        <Pie 
-                            data={pieData} 
-                            dataKey="value" 
-                            nameKey="name" 
-                            cx="50%" 
-                            cy="50%" 
-                            outerRadius={80} 
-                            label
-                        >
-                            {pieData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.fill} />
-                            ))}
-                        </Pie>
-                        <Tooltip />
-                    </PieChart>
-                </ResponsiveContainer>
+                <div className={styles.PieChartContainer}>
+                    <ResponsiveContainer>
+                            <PieChart>
+                            <Pie 
+                                data={pieData} 
+                                dataKey="value" 
+                                nameKey="name" 
+                                cx="50%" 
+                                cy="50%" 
+                                outerRadius={'100%'} 
+                                label
+                            >
+                                {pieData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                ))}
+                            </Pie>
+                            <Tooltip formatter={(value) => formatCurrency(value)} />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
             </div>
         </>
     );

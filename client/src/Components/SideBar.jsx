@@ -41,15 +41,14 @@ export const SideBar = ({ open }) => {
                 users
                 .map((user, i) => {
                     return (
-                        <div key={i}>
-                            <div className={styles.userPreview}>
-                                <div className={styles.personalData}>
-                                    <img src={user.img} alt="Profile Picture" />
-                                    <h3>{user.name}</h3>
-                                </div>
-                                <p>{user.monthlyExpendables.toFixed(2)} €</p>
+                        <div key={i} className={styles.userPreview}>
+                            <div className={styles.personalData}>
+                                <img src={user.img} alt="Profile Picture" />
+                                <h3>{user.name}</h3>
                             </div>
-                            <hr />
+                            <p className={user.monthlyExpendables < 0 ? styles.negative : ''}>
+                                {user.monthlyExpendables.toFixed(2)} €
+                            </p>
                         </div>
                     )
                 })
