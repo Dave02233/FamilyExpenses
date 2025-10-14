@@ -1,34 +1,189 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import styles from './Styles/Dashboard.module.css';
+import { API_URL } from '../config';
 
-const data = [
-    { name: 'Gen', Davide: 120, Alessia: 200, Chiara: 80 },
-    { name: 'Feb', Davide: 90, Alessia: 150, Chiara: 60 },
-    { name: 'Mar', Davide: 160, Alessia: 220, Chiara: 120 },
-    { name: 'Apr', Davide: 80, Alessia: 100, Chiara: 40 },
-    { name: 'Mag', Davide: 130, Alessia: 170, Chiara: 50 },
-    { name: 'Giu', Davide: 140, Alessia: 180, Chiara: 100 },
+const users = ['Alessia', 'Chiara', 'Davide'];
+
+const categoryColors = [
+    '#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c', '#d084d0'
 ];
-
-const pieData = [
-    { name: 'Sigarette', value: 720, fill: '#8884d8' },
-    { name: 'Spesa', value: 1020, fill: '#82ca9d' },
-    { name: 'Vestiti', value: 450, fill: '#ffc658' },
-];
-
-const users = [
-    'Alessia',
-    'Chiara',
-    'Davide',
-]
 
 const formatCurrency = (value) => `${value}€`;
 
+// Hook personalizzato per font size responsive dei grafici
+const useChartFontSize = () => {
+    const [fontSize, setFontSize] = useState({
+        axis: window.innerWidth >= 992 ? '1rem' : '0.75rem',
+        label: window.innerWidth >= 992 ? '1rem' : '0.75rem',
+        smallLabel: window.innerWidth >= 992 ? '0.8rem' : '0.7rem'
+    });
+
+    useEffect(() => {
+        const handleResize = () => {
+            const isLargeScreen = window.innerWidth >= 992;
+            setFontSize({
+                axis: isLargeScreen ? '1rem' : '0.75rem',
+                label: isLargeScreen ? '1rem' : '0.75rem',
+                smallLabel: isLargeScreen ? '0.8rem' : '0.7rem'
+            });
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    return fontSize;
+};
+
 export const Dashboard = () => {
-    const [filterType, setFilterType] = useState('1mese');
+    const chartFontSize = useChartFontSize();
+    const [filterType, setFilterType] = useState('3mesi');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [monthlyData, setMonthlyData] = useState([]);
+    const [categoryData, setCategoryData] = useState([]);
+    const [userCategoryData, setUserCategoryData] = useState({});
+
+    const fetchMonthlyData = useCallback(async () => {
+        try {
+            let url = `${API_URL}/api/expenses/monthly`;
+            const params = new URLSearchParams();
+            
+            if (filterType === 'custom' && startDate && endDate) {
+                // Converti il formato YYYY-MM in date range
+                const start = new Date(startDate + '-01');
+                const end = new Date(endDate + '-01');
+                end.setMonth(end.getMonth() + 1);
+                end.setDate(0); // Ultimo giorno del mese
+                
+                params.append('startDate', start.toISOString());
+                params.append('endDate', end.toISOString());
+            } else if (filterType === '1mese') {
+                params.append('months', '1');
+            } else if (filterType === '3mesi') {
+                params.append('months', '3');
+            } else if (filterType === '1anno') {
+                params.append('months', '12');
+            }
+            
+            if (params.toString()) {
+                url += '?' + params.toString();
+            }
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            // Trasforma i dati in formato per recharts
+            const transformedData = data.reduce((acc, item) => {
+                const existing = acc.find(d => d.name === item.name);
+                if (existing) {
+                    existing[item.user_name] = parseFloat(item.total);
+                } else {
+                    acc.push({
+                        name: item.name,
+                        [item.user_name]: parseFloat(item.total)
+                    });
+                }
+                return acc;
+            }, []);
+            
+            setMonthlyData(transformedData);
+        } catch (error) {
+            console.error('Errore nel caricamento dei dati mensili:', error);
+        }
+    }, [filterType, startDate, endDate]);
+
+    const fetchCategoryData = useCallback(async () => {
+        try {
+            let url = `${API_URL}/api/expenses/by-category`;
+            const params = new URLSearchParams();
+            
+            if (filterType === 'custom' && startDate && endDate) {
+                const start = new Date(startDate + '-01');
+                const end = new Date(endDate + '-01');
+                end.setMonth(end.getMonth() + 1);
+                end.setDate(0);
+                
+                params.append('startDate', start.toISOString());
+                params.append('endDate', end.toISOString());
+            } else if (filterType !== 'custom') {
+                const months = filterType === '1mese' ? 1 : filterType === '3mesi' ? 3 : 12;
+                const startFilter = new Date();
+                // Vai al primo giorno del mese corrente, poi torna indietro di (months - 1) mesi
+                startFilter.setDate(1);
+                startFilter.setMonth(startFilter.getMonth() - (months - 1));
+                startFilter.setHours(0, 0, 0, 0);
+                params.append('startDate', startFilter.toISOString());
+            }
+            
+            if (params.toString()) {
+                url += '?' + params.toString();
+            }
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            const transformedData = data.map((item, index) => ({
+                name: item.category,
+                value: parseFloat(item.total),
+                fill: categoryColors[index % categoryColors.length]
+            }));
+            
+            setCategoryData(transformedData);
+        } catch (error) {
+            console.error('Errore nel caricamento dei dati per categoria:', error);
+        }
+    }, [filterType, startDate, endDate]);
+
+    const fetchUserCategoryData = useCallback(async () => {
+        try {
+            const userData = {};
+            for (const user of users) {
+                let url = `${API_URL}/api/expenses/by-category/${user}`;
+                const params = new URLSearchParams();
+                
+                if (filterType === 'custom' && startDate && endDate) {
+                    const start = new Date(startDate + '-01');
+                    const end = new Date(endDate + '-01');
+                    end.setMonth(end.getMonth() + 1);
+                    end.setDate(0);
+                    
+                    params.append('startDate', start.toISOString());
+                    params.append('endDate', end.toISOString());
+                } else if (filterType !== 'custom') {
+                    const months = filterType === '1mese' ? 1 : filterType === '3mesi' ? 3 : 12;
+                    const startFilter = new Date();
+                    startFilter.setDate(1);
+                    startFilter.setMonth(startFilter.getMonth() - (months - 1));
+                    startFilter.setHours(0, 0, 0, 0);
+                    params.append('startDate', startFilter.toISOString());
+                }
+                
+                if (params.toString()) {
+                    url += '?' + params.toString();
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                userData[user] = data.map((item, index) => ({
+                    name: item.category,
+                    value: parseFloat(item.total),
+                    fill: categoryColors[index % categoryColors.length]
+                }));
+            }
+            setUserCategoryData(userData);
+        } catch (error) {
+            console.error('Errore nel caricamento dei dati utente per categoria:', error);
+        }
+    }, [filterType, startDate, endDate]);
+
+    useEffect(() => {
+        fetchMonthlyData();
+        fetchCategoryData();
+        fetchUserCategoryData();
+    }, [fetchMonthlyData, fetchCategoryData, fetchUserCategoryData]);
 
     const handleFilterChange = (e) => {
         setFilterType(e.target.value);
@@ -86,12 +241,12 @@ export const Dashboard = () => {
                     
 
                     <div className={styles.ChartHeader}>
-                        <h2>💰 Spese Mensili</h2>
+                        <h2>Spese Mensili</h2>
                         <span className={styles.ChartSubtitle}>Confronto per membro della famiglia</span>
                     </div>
                     <ResponsiveContainer className={styles.ResponsiveContainer}>
                         <BarChart 
-                            data={data} 
+                            data={monthlyData} 
                             margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
                             barCategoryGap="15%"
                         >
@@ -100,12 +255,12 @@ export const Dashboard = () => {
                                 dataKey="name" 
                                 axisLine={false}
                                 tickLine={false}
-                                tick={{ fill: '#ffffff', fontSize: 12 }}
+                                tick={{ fill: '#ffffff', fontSize: chartFontSize.axis }}
                             />
                             <YAxis 
                                 axisLine={false}
                                 tickLine={false}
-                                tick={{ fill: '#ffffff', fontSize: 12 }}
+                                tick={{ fill: '#ffffff', fontSize: chartFontSize.axis }}
                                 tickFormatter={(value) => `${value}€`}
                             />
                             <Tooltip 
@@ -130,23 +285,40 @@ export const Dashboard = () => {
           
                 <div className={styles.PieChartContainer}>
                     <div className={styles.ChartHeader}>
-                        <h2>📊 Categorie di Spesa</h2>
+                        <h2>Categorie delle spese</h2>
                         <span className={styles.ChartSubtitle}>Distribuzione per categoria</span>
                     </div>
                     <ResponsiveContainer width="100%" height={400}>
                         <PieChart margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
                             <Pie 
-                                data={pieData} 
+                                data={categoryData} 
                                 dataKey="value" 
                                 nameKey="name" 
                                 cx="50%"  
-                                innerRadius="40%" 
-                                outerRadius="75%" 
+                                innerRadius="25%" 
+                                outerRadius="55%" 
                                 animationDuration={1000}
-                                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                                labelLine={false}
+                                label={({ cx, cy, midAngle, outerRadius, name, percent }) => {
+                                    const RADIAN = Math.PI / 180;
+                                    const radius = outerRadius + 15;
+                                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                                    return (
+                                        <text 
+                                            x={x} 
+                                            y={y} 
+                                            fill="white" 
+                                            textAnchor={x > cx ? 'start' : 'end'} 
+                                            dominantBaseline="central"
+                                            fontSize={chartFontSize.label}
+                                        >
+                                            {`${name} ${(percent * 100).toFixed(0)}%`}
+                                        </text>
+                                    );
+                                }}
+                                labelLine={{ stroke: 'rgba(255,255,255,0.3)', strokeWidth: 1 }}
                             >
-                                {pieData.map((entry, index) => (
+                                {categoryData.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.fill} stroke="rgba(255,255,255,0.1)" strokeWidth={2} />
                                 ))}
                             </Pie>
@@ -154,7 +326,7 @@ export const Dashboard = () => {
                                 formatter={(value, name) => [formatCurrency(value), name]}
                                 contentStyle={{
                                     backgroundColor: 'rgba(30, 30, 30, 0.95)',
-                                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                                    border: '1px solid rgba(139, 100, 100, 0.2)',
                                     borderRadius: '8px',
                                     color: '#ffffff',
                                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
@@ -172,21 +344,38 @@ export const Dashboard = () => {
                                 <div className={styles.ChartHeader}>
                                     <h3>{user}</h3>
                                 </div>
-                                <ResponsiveContainer width="100%" height={200}>
+                                <ResponsiveContainer width="100%" height={340}>
                                     <PieChart>
                                         <Pie 
-                                            data={pieData} 
+                                            data={userCategoryData[user] || []} 
                                             dataKey="value" 
                                             nameKey="name" 
                                             cx="50%"  
                                             cy="50%"
-                                            innerRadius="40%" 
-                                            outerRadius="85%" 
+                                            innerRadius="35%" 
+                                            outerRadius="55%" 
                                             animationDuration={1000}
-                                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                                            labelLine={false}
+                                            label={({ cx, cy, midAngle, outerRadius, name, percent }) => {
+                                                const RADIAN = Math.PI / 180;
+                                                const radius = outerRadius + 15;
+                                                const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                                                const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                                                return (
+                                                    <text 
+                                                        x={x} 
+                                                        y={y} 
+                                                        fill="white" 
+                                                        textAnchor={x > cx ? 'start' : 'end'} 
+                                                        dominantBaseline="central"
+                                                        fontSize={chartFontSize.smallLabel}
+                                                    >
+                                                        {`${name} ${(percent * 100).toFixed(0)}%`}
+                                                    </text>
+                                                );
+                                            }}
+                                            labelLine={{ stroke: 'rgba(255,255,255,0.3)', strokeWidth: 1 }}
                                         >
-                                            {pieData.map((entry, index) => (
+                                            {(userCategoryData[user] || []).map((entry, index) => (
                                                 <Cell key={`cell-${user}-${index}`} fill={entry.fill} stroke="rgba(255,255,255,0.1)" strokeWidth={2} />
                                             ))}
                                         </Pie>

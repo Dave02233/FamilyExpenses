@@ -4,57 +4,58 @@ import styles from './Styles/SideBar.module.css'
 
 export const SideBar = ({ open }) => {
 
+    const [visibility, setVisibility] = useState(false);
+    const [usersData, setUsersData] = useState([]);
+    const navigate = useNavigate();
+
     useEffect(() => {
         setVisibility(open);
-    }, [open])
+        if (open) {
+            fetchUsersData();
+        }
+    }, [open]);
 
-    const [visibility, setVisibility] = useState(false);
-    const navigate = useNavigate();
+    const fetchUsersData = async () => {
+        const userNames = ['Alessia', 'Chiara', 'Davide'];
+        const promises = userNames.map(name => 
+            fetch(`http://localhost:3001/api/user/${name}/profile`)
+                .then(res => res.json())
+                .catch(err => {
+                    console.error(`Errore caricamento ${name}:`, err);
+                    return { name, current_savings: 0 };
+                })
+        );
+
+        const results = await Promise.all(promises);
+        setUsersData(results);
+    };
 
     const handleUserClick = (userName) => {
         setVisibility(false);
         navigate(`/profile/${userName}`);
-    } 
-
-    const users = [
-        {
-            name: 'Alessia',
-            img: 'NoUserImg.svg',
-            monthlyExpendables: 1200
-        },
-        {
-            name: 'Chiara',
-            img: 'NoUserImg.svg',
-            monthlyExpendables: -200
-        },
-        {
-            name: 'Davide',
-            img: 'NoUserImg.svg',
-            monthlyExpendables: 600
-        }
-    ]
+    }; 
 
     return (
         <div className={`${styles.SideBarContainer} ${visibility ? styles.open : styles.closed}`}>
-            {
-                users
-                .map((user, i) => {
+            {usersData.length === 0 ? (
+                <div className={styles.loading}>Caricamento...</div>
+            ) : (
+                usersData.map((user, i) => {
+                    const savings = parseFloat(user.current_savings) || 0;
                     return (
                         <div key={i} className={styles.userPreview} onClick={()=>handleUserClick(user.name)}>
                             <div className={styles.personalData}>
-                                <img src={user.img} alt="Profile Picture" />
+                                <img src="/NoUserImg.svg" alt="Profile Picture" />
                                 <h3>{user.name}</h3>
                             </div>
-                            <p className={user.monthlyExpendables <= 0 ? styles.negative : ''}>
-                                {user.monthlyExpendables.toFixed(2)} €
+                            <p className={savings <= 0 ? styles.negative : ''}>
+                                {savings.toFixed(2)} €
                             </p>
                         </div>
-                    )
+                    );
                 })
-            }
-
-      
+            )}
         </div>
-    )
+    );
 }
 

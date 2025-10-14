@@ -13,6 +13,20 @@ body {
 /* Viewport meta tag per mobile - assicurati che sia nell'HTML */
 html {
   font-size: 16px;
+  
+  /* Variabili CSS per i font size dei grafici */
+  --chart-axis-font-size: 0.75rem;
+  --chart-label-font-size: 0.75rem;
+  --chart-small-label-font-size: 0.7rem;
+}
+
+/* Font size più grandi per schermi da 992px in su */
+@media (min-width: 992px) {
+  html {
+    --chart-axis-font-size: 0.875rem;
+    --chart-label-font-size: 0.875rem;
+    --chart-small-label-font-size: 0.8rem;
+  }
 }
 
 /* Regole generali per mobile */

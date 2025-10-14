@@ -51,6 +51,8 @@
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
     transition: background-color 0.2s ease;
+
+    cursor: pointer;
 }
 
 @media (max-width: 768px) {
@@ -130,12 +132,6 @@
     border-radius: 12px;
     border: 1px solid rgba(76, 175, 80, 0.3);
 }
-
-.userPreview hr {
-    display: none;
-}
-
-
 
 /* Animazioni solo su mobile */
 @media (max-width: 768px) {

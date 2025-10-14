@@ -5,6 +5,28 @@
     min-height: 90vh;
 }
 
+.backButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    margin-bottom: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.backButton:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateX(-4px);
+}
+
 .profileHeader {
     display: flex;
     flex-direction: column;
@@ -18,7 +40,9 @@
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+
 }
 
 .profileImage {
@@ -36,7 +60,7 @@
     font-weight: 600;
 }
 
-.salarySection {
+.savingsSection {
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
     padding: 1.5rem;
     border-radius: 1rem;
@@ -44,60 +68,159 @@
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     margin-bottom: 2rem;
 }
 
-.salarySection h2 {
-    margin-top: 0;
-    margin-bottom: 1rem;
+.savingsSection h2 {
+    margin: 0 0 1.5rem 0;
     color: white;
     font-size: 1.3rem;
     font-weight: 600;
-}
-
-.salaryContainer {
     display: flex;
     align-items: center;
+    gap: 0.5rem;
+}
+
+.savingsContent {
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
 }
 
-.salaryDisplay {
+.savingsAmount {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.savingsLabel {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+}
+
+.savingsValue {
+    color: #82ca9d;
     font-size: 1.5rem;
-    font-weight: bold;
-    color: #4ade80;
-    margin: 0;
+    font-weight: 700;
 }
 
-.salaryInput {
-    font-size: 1.3rem;
-    padding: 0.5rem;
+.goalDisplay {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.editGoalButton {
     background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    width: 150px;
-    color: white;
-}
-
-.salaryInput:focus {
-    outline: none;
-    border-color: rgba(74, 222, 128, 0.5);
-}
-
-.editButton {
-    padding: 0.5rem 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
+    color: white;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 1rem;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
 }
 
-.editButton:hover {
+.editGoalButton:hover {
     background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.editGoalContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.goalInput {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+    width: 150px;
+    outline: none;
+}
+
+.goalInput:focus {
+    border-color: #82ca9d;
+    box-shadow: 0 0 0 2px rgba(130, 202, 157, 0.2);
+}
+
+.saveGoalButton {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    border: none;
+    color: white;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.saveGoalButton:hover {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    transform: scale(1.05);
+}
+
+.cancelGoalButton {
+    background: linear-gradient(135deg, #f87171, #ef4444);
+    border: none;
+    color: white;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.cancelGoalButton:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    transform: scale(1.05);
+}
+
+.savingsProgress {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.progressBar {
+    width: 100%;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #82ca9d, #4ade80);
+    transition: width 0.5s ease;
+    border-radius: 12px;
+}
+
+.negativeFill {
+    background: linear-gradient(90deg, #f87171, #ef4444) !important;
+}
+
+.progressText {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.negativeText {
+    color: #f87171;
+    font-weight: 600;
 }
 
 .actionsSection {
@@ -108,6 +231,7 @@
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     margin-bottom: 2rem;
 }
@@ -170,6 +294,7 @@
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
 }
 
@@ -186,6 +311,426 @@
     font-style: italic;
     text-align: center;
     padding: 2rem;
+}
+
+.transactionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.transactionItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+}
+
+.transactionItem:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(4px);
+}
+
+.incomeItem {
+    border-left: 3px solid #4ade80;
+}
+
+.expenseItem {
+    border-left: 3px solid #f87171;
+}
+
+.transactionInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.transactionCategory {
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: capitalize;
+}
+
+.transactionDescription {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+}
+
+.transactionDate {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.8rem;
+}
+
+.transactionAmount {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.incomeAmount {
+    color: #4ade80;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.expenseAmount {
+    color: #f87171;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.deleteButton {
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteButton:hover {
+    background: rgba(248, 113, 113, 0.2);
+    border-color: rgba(248, 113, 113, 0.5);
+    transform: scale(1.1);
+}
+
+.deleteButton:active {
+    transform: scale(0.95);
+}
+
+/* popup Styles */
+.popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.popupContent {
+    background: linear-gradient(145deg, rgba(30, 30, 30, 0.98), rgba(20, 20, 20, 0.98));
+    border-radius: 1rem;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.popupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.popupHeader h2 {
+    margin: 0;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.closeButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.popupForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formGroup label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.input,
+.select,
+.textarea {
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s;
+    font-family: inherit;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.select {
+    cursor: pointer;
+}
+
+.select option {
+    background: #1a1a1a;
+    color: white;
+}
+
+.textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.popupActions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.cancelButton,
+.submitButton {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.cancelButton {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cancelButton:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.submitButton {
+    color: white;
+}
+
+.submitIncome {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    box-shadow: 0 4px 16px rgba(74, 222, 128, 0.3);
+}
+
+.submitIncome:hover {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+}
+
+.submitExpense {
+    background: linear-gradient(135deg, #f87171, #ef4444);
+    box-shadow: 0 4px 16px rgba(248, 113, 113, 0.3);
+}
+
+.submitExpense:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(248, 113, 113, 0.4);
+}
+
+/* Chart Section */
+.chartSection {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    margin-bottom: 2rem;
+}
+
+.FilterContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.FilterGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.FilterGroup label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    font-weight: 500;
+    min-width: 70px;
+}
+
+.FilterSelect {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.FilterSelect:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.FilterSelect:focus {
+    border-color: #8884d8;
+    box-shadow: 0 0 0 2px rgba(136, 132, 216, 0.2);
+}
+
+.FilterSelect option {
+    background: #1a1a1a;
+    color: white;
+}
+
+.CustomDateContainer {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.DateGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.DateGroup label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.DateInput {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.DateInput:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.DateInput:focus {
+    border-color: #8884d8;
+    box-shadow: 0 0 0 2px rgba(136, 132, 216, 0.2);
+}
+
+.DateInput::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+.BarChartContainer {
+    width: 100%;
+    min-height: 400px;
+}
+
+.ChartHeader {
+    margin-bottom: 0.5rem;
+}
+
+.ChartHeader h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3rem;
+    color: white;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ChartSubtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    font-weight: 400;
+    margin: 0;
 }
 
 /* Responsive */
@@ -209,5 +754,67 @@
     .profileImage {
         width: 100px;
         height: 100px;
+    }
+
+    .popupContent {
+        padding: 1.5rem;
+    }
+
+    .popupHeader h2 {
+        font-size: 1.2rem;
+    }
+
+    .popupActions {
+        flex-direction: column;
+    }
+
+    .FilterContainer {
+        padding: 0.75rem;
+    }
+
+    .FilterGroup {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .CustomDateContainer {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .DateGroup {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .DateInput {
+        width: 100%;
+    }
+
+    .ChartHeader h2 {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+
+    .ChartSubtitle {
+        font-size: 0.8rem;
+        text-align: center;
+    }
+
+    .transactionItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .transactionAmount {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .deleteButton {
+        padding: 0.4rem 0.6rem;
+        font-size: 1rem;
     }
 }
