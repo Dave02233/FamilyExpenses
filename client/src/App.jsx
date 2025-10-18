@@ -60,7 +60,7 @@ function App() {
       </header> 
       
       <div className={styles.ContentWrapper}>
-        {sideBar && <SideBar open={sideBar}/>}
+        {sideBar && <SideBar open={sideBar} click={handleClickMenu}/>}
         <div className={styles.MainContent}>
           <Outlet />
         </div>

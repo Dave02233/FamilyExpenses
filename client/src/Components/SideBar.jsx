@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Styles/SideBar.module.css'
+import { API_URL } from '../config';
 
-export const SideBar = ({ open }) => {
+export const SideBar = ({ open, click }) => {
 
     const [visibility, setVisibility] = useState(false);
     const [usersData, setUsersData] = useState([]);
@@ -18,7 +19,7 @@ export const SideBar = ({ open }) => {
     const fetchUsersData = async () => {
         const userNames = ['Alessia', 'Chiara', 'Davide'];
         const promises = userNames.map(name => 
-            fetch(`http://localhost:3001/api/user/${name}/profile`)
+            fetch(`${API_URL}/api/user/${name}/profile`)
                 .then(res => res.json())
                 .catch(err => {
                     console.error(`Errore caricamento ${name}:`, err);
@@ -31,6 +32,7 @@ export const SideBar = ({ open }) => {
     };
 
     const handleUserClick = (userName) => {
+        click();
         setVisibility(false);
         navigate(`/profile/${userName}`);
     }; 
