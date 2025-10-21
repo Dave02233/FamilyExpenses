@@ -508,6 +508,8 @@ export const Profile = () => {
                                             <option value="vestiti">Vestiti</option>
                                             <option value="bollette">Bollette</option>
                                             <option value="loki">Loki</option>
+                                            <option value="salute">Salute</option>
+                                            <option value="unghie">Unghie</option>
                                             <option value="trasporti">Trasporti</option>
                                         </>
                                     )}
