@@ -21,3 +21,4 @@ CREATE TABLE incomes (
     amount DECIMAL(10, 2) NOT NULL,
     description VARCHAR(50)
 );
+

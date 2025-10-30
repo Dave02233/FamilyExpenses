@@ -36,6 +36,7 @@ export const Profile = () => {
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
+    const [timestamp, setTimestamp] = useState('');
     const [profileData, setProfileData] = useState(null);
     const [recentTransactions, setRecentTransactions] = useState([]);
     const [isEditingGoal, setIsEditingGoal] = useState(false);
@@ -147,6 +148,7 @@ export const Profile = () => {
         setAmount('');
         setCategory('');
         setDescription('');
+        setTimestamp('');
     };
 
     const handleSubmit = async (e) => {
@@ -157,7 +159,8 @@ export const Profile = () => {
             user_name: user,
             amount: parseFloat(amount),
             category,
-            description
+            description,
+            created_at: timestamp || new Date().toISOString()
         };
 
         try {
@@ -528,6 +531,17 @@ export const Profile = () => {
                                     rows="3"
                                     maxLength={30}
                                     className={styles.textarea}
+                                />
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label htmlFor="timestamp">Data e Ora</label>
+                                <input
+                                    type="datetime-local"
+                                    id="timestamp"
+                                    value={timestamp}
+                                    onChange={(e) => setTimestamp(e.target.value)}
+                                    className={styles.input}
                                 />
                             </div>
 
