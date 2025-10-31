@@ -513,7 +513,7 @@ export const Profile = () => {
                                             <option value="salute">Salute</option>
                                             <option value="casa">Casa</option>
                                             <option value="unghie">Unghie</option>
-                                            <option value="assicurazione">Macchina</option>
+                                            <option value="assicurazione">assicurazione</option>
                                             <option value="debiti">Debiti</option>
                                             <option value="regalo">Regalo</option>
                                         </>
