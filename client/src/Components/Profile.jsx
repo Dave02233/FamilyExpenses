@@ -58,7 +58,7 @@ export const Profile = () => {
 
     const fetchRecentTransactions = useCallback(async () => {
         try {
-            const response = await fetch(`${API_URL}/api/user/${user}/recent-transactions?limit=10`);
+            const response = await fetch(`${API_URL}/api/user/${user}/recent-transactions?limit=30`);
             const data = await response.json();
             setRecentTransactions(data);
         } catch (error) {
@@ -541,7 +541,11 @@ export const Profile = () => {
                                     type="datetime-local"
                                     id="timestamp"
                                     value={timestamp}
-                                    onChange={(e) => setTimestamp(e.target.value)}
+                                    onChange={(e) => {
+                                        const date = new Date(e.target.value);
+                                        const formattedDate = date.toISOString().slice(0, -1).replace('T', ' ');
+                                        setTimestamp(formattedDate);
+                                    }}
                                     className={styles.input}
                                 />
                             </div>

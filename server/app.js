@@ -20,7 +20,7 @@ app.get('/Test', (req, res) => {
 });
 
 app.post('/api/expenses', (req, res) => {
-    const { user_name, amount, category, description } = req.body;
+    const { user_name, created_at, amount, category, description } = req.body;
     
     db.query('SELECT id FROM users WHERE name = $1', [user_name])
         .then(userResult => {
@@ -30,8 +30,8 @@ app.post('/api/expenses', (req, res) => {
             const user_id = userResult.rows[0].id;
             
             return db.query(
-                'INSERT INTO expenses (user_id, amount, category, description) VALUES ($1, $2, $3, $4) RETURNING *',
-                [user_id, amount, category, description]
+                'INSERT INTO expenses (user_id, created_at, amount, category, description) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+                [user_id, created_at, amount, category, description]
             );
         })
         .then(result => {
