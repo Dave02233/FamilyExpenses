@@ -2,7 +2,7 @@
 
 import { useParams, NavLink } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { Area, Bar, ReferenceLine, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, ComposedChart } from 'recharts';
 import styles from './Styles/Profile.module.css';
 import { API_URL } from '../config';
 
@@ -41,7 +41,7 @@ export const Profile = () => {
     const [recentTransactions, setRecentTransactions] = useState([]);
     const [isEditingGoal, setIsEditingGoal] = useState(false);
     const [newGoal, setNewGoal] = useState('');
-    const [filterType, setFilterType] = useState('1mese');
+    const [filterType, setFilterType] = useState('3mesi');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [monthlyIncomeExpenseData, setMonthlyIncomeExpenseData] = useState([]);
@@ -100,14 +100,25 @@ export const Profile = () => {
                 if (existing) {
                     if (item.type === 'income') {
                         existing.Entrate = parseFloat(item.total);
+                        const risparmio = existing.Entrate - (existing.Uscite || 0);
+                        existing.RisparmioPositivo = risparmio > 0 ? risparmio : 0;
+                        existing.RisparmioNegativo = risparmio < 0 ? risparmio : 0;
                     } else {
                         existing.Uscite = parseFloat(item.total);
+                        const risparmio = (existing.Entrate || 0) - existing.Uscite;
+                        existing.RisparmioPositivo = risparmio > 0 ? risparmio : 0;
+                        existing.RisparmioNegativo = risparmio < 0 ? risparmio : 0;
                     }
                 } else {
+                    const entrate = item.type === 'income' ? parseFloat(item.total) : 0;
+                    const uscite = item.type === 'expense' ? parseFloat(item.total) : 0;
+                    const risparmio = entrate - uscite;
                     acc.push({
                         name: item.name,
-                        Entrate: item.type === 'income' ? parseFloat(item.total) : 0,
-                        Uscite: item.type === 'expense' ? parseFloat(item.total) : 0
+                        Entrate: entrate,
+                        Uscite: uscite,
+                        RisparmioPositivo: risparmio > 0 ? risparmio : 0,
+                        RisparmioNegativo: risparmio < 0 ? risparmio : 0
                     });
                 }
                 return acc;
@@ -182,6 +193,7 @@ export const Profile = () => {
             handleClosePopup();
             fetchProfileData();
             fetchRecentTransactions();
+            fetchMonthlyIncomeExpense();
         } catch (error) {
             console.error('Errore:', error);
             alert('Errore durante il salvataggio della transazione');
@@ -275,7 +287,7 @@ export const Profile = () => {
                 <h2>Obiettivo di Risparmio</h2>
                 <div className={styles.savingsContent}>
                     <div className={styles.savingsAmount}>
-                        <span className={styles.savingsLabel}>Obiettivo mensile:</span>
+                        <span className={styles.savingsLabel}>Obiettivo:</span>
                         {isEditingGoal ? (
                             <div className={styles.editGoalContainer}>
                                 <input
@@ -284,7 +296,7 @@ export const Profile = () => {
                                     onChange={(e) => setNewGoal(e.target.value)}
                                     className={styles.goalInput}
                                     placeholder="Inserisci obiettivo"
-                                    step="0.01"
+                                    step="5.00"
                                 />
                                 <button onClick={handleSaveGoal} className={styles.saveGoalButton}>✓</button>
                                 <button onClick={handleCancelEditGoal} className={styles.cancelGoalButton}>✕</button>
@@ -379,11 +391,20 @@ export const Profile = () => {
                         <span className={styles.ChartSubtitle}>Andamento finanziario personale</span>
                     </div>
                     <ResponsiveContainer width="100%" height={400}>
-                        <BarChart 
-                            data={monthlyIncomeExpenseData} 
+                        <ComposedChart 
+                            data={monthlyIncomeExpenseData}
                             margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
-                            barCategoryGap="15%"
                         >
+                        <defs>
+                            <linearGradient id="positiveArea" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                                <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+                            </linearGradient>
+                            <linearGradient id="negativeArea" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#ff4d4d" stopOpacity={0.8} />
+                                <stop offset="95%" stopColor="#ff4d4d" stopOpacity={0} />
+                            </linearGradient>
+                        </defs>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                             <XAxis 
                                 dataKey="name" 
@@ -398,7 +419,12 @@ export const Profile = () => {
                                 tickFormatter={(value) => `${value}€`}
                             />
                             <Tooltip 
-                                formatter={(value) => `${value}€`}
+                                formatter={(value, name) => {
+                                    if ((name === 'RisparmioPositivo' || name === 'RisparmioNegativo') && value === 0) {
+                                        return null;
+                                    }
+                                    return `${value}€`;
+                                }}
                                 contentStyle={{
                                     backgroundColor: 'rgba(30, 30, 30, 0.95)',
                                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -412,7 +438,26 @@ export const Profile = () => {
                             />
                             <Bar dataKey="Entrate" fill="#82ca9d" />
                             <Bar dataKey="Uscite" fill="#ff8042" />
-                        </BarChart>
+                            <ReferenceLine y={0} stroke="rgba(255,255,255,0.2)" />
+                            <Area
+                                type="monotone"
+                                dataKey="RisparmioPositivo"
+                                stroke="#34975aff"
+                                fillOpacity={1}
+                                fill="url(#positiveArea)"
+                                strokeWidth={2}
+                            />
+                            <Area
+                                type="monotone"
+                                dataKey="RisparmioNegativo"
+                                stroke="#ff4d4d"
+                                fillOpacity={1}
+                                fill="url(#negativeArea)"
+                                baseValue={0}
+                                isAnimationActive={false}
+                                strokeWidth={2}
+                            />
+                        </ComposedChart>
                     </ResponsiveContainer>
                 </div>
             </div>

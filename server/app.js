@@ -198,15 +198,11 @@ app.get('/api/user/:user_name/profile', (req, res) => {
             ) as total_expenses,
             COALESCE(
                 (SELECT SUM(amount) FROM incomes 
-                 WHERE user_id = u.id 
-                 AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM CURRENT_DATE)
-                 AND EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM CURRENT_DATE)
+                 WHERE user_id = u.id
                 ), 0
             ) - COALESCE(
                 (SELECT SUM(amount) FROM expenses 
-                 WHERE user_id = u.id 
-                 AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM CURRENT_DATE)
-                 AND EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM CURRENT_DATE)
+                 WHERE user_id = u.id
                 ), 0
             ) as current_savings
          FROM users u
