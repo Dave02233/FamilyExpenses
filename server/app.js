@@ -19,6 +19,13 @@ app.get('/Test', (req, res) => {
         .catch(err => res.status(500).json({ error: err.message }));
 });
 
+// Ottiene la lista di tutti gli utenti
+app.get('/api/users', (req, res) => {
+    db.query('SELECT name FROM users ORDER BY name', [])
+        .then(result => res.json(result.rows))
+        .catch(err => res.status(500).json({ error: err.message }));
+});
+
 app.post('/api/expenses', (req, res) => {
     const { user_name, created_at, amount, category, description } = req.body;
     
