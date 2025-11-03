@@ -3,8 +3,6 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContaine
 import styles from './Styles/Dashboard.module.css';
 import { API_URL } from '../config';
 
-const users = ['Alessia', 'Chiara', 'Davide'];
-
 const categoryColors = [
     '#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c', '#d084d0'
 ];
@@ -38,6 +36,7 @@ const useChartFontSize = () => {
 
 export const Dashboard = () => {
     const chartFontSize = useChartFontSize();
+    const [users, setUsers] = useState([]);
     const [filterType, setFilterType] = useState('3mesi');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -137,6 +136,8 @@ export const Dashboard = () => {
     }, [filterType, startDate, endDate]);
 
     const fetchUserCategoryData = useCallback(async () => {
+        if (users.length === 0) return;
+        
         try {
             const userData = {};
             for (const user of users) {
@@ -179,11 +180,28 @@ export const Dashboard = () => {
         }
     }, [filterType, startDate, endDate]);
 
+    const fetchUsers = useCallback(async () => {
+        try {
+            const response = await fetch(`${API_URL}/api/users`);
+            const data = await response.json();
+            setUsers(data.map(user => user.name));
+        } catch (error) {
+            console.error('Errore nel caricamento degli utenti:', error);
+            setUsers([]);
+        }
+    }, []);
+
     useEffect(() => {
-        fetchMonthlyData();
-        fetchCategoryData();
-        fetchUserCategoryData();
-    }, [fetchMonthlyData, fetchCategoryData, fetchUserCategoryData]);
+        fetchUsers();
+    }, [fetchUsers]);
+
+    useEffect(() => {
+        if (users.length > 0) {
+            fetchMonthlyData();
+            fetchCategoryData();
+            fetchUserCategoryData();
+        }
+    }, [fetchMonthlyData, fetchCategoryData, fetchUserCategoryData, users]);
 
     const handleFilterChange = (e) => {
         setFilterType(e.target.value);
