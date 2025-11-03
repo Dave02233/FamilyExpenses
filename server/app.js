@@ -345,8 +345,16 @@ app.get(/^(?!\/api).*$/, (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
 });
 
-app.listen(port, '0.0.0.0',
-    () => {
+// Gestione errori non catturati
+process.on('uncaughtException', (err) => {
+    console.error('Errore non catturato:', err);
+});
+
+process.on('unhandledRejection', (err) => {
+    console.error('Promise rejection non gestita:', err);
+});
+
+app.listen(port, '0.0.0.0', () => {
     console.log(`Server in ascolto sulla porta ${port}`);
 });
 
