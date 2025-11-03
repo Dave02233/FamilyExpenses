@@ -178,7 +178,7 @@ export const Dashboard = () => {
         } catch (error) {
             console.error('Errore nel caricamento dei dati utente per categoria:', error);
         }
-    }, [filterType, startDate, endDate]);
+    }, [filterType, startDate, endDate, users]);
 
     const fetchUsers = useCallback(async () => {
         try {
