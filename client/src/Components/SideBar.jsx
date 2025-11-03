@@ -17,18 +17,27 @@ export const SideBar = ({ open, click }) => {
     }, [open]);
 
     const fetchUsersData = async () => {
-        const userNames = ['Alessia', 'Chiara', 'Davide'];
-        const promises = userNames.map(name => 
-            fetch(`${API_URL}/api/user/${name}/profile`)
-                .then(res => res.json())
-                .catch(err => {
-                    console.error(`Errore caricamento ${name}:`, err);
-                    return { name, current_savings: 0 };
-                })
-        );
+        try {
+            // Prima otteniamo la lista degli utenti dal database
+            const response = await fetch(`${API_URL}/api/users`);
+            const users = await response.json();
+            
+            // Poi otteniamo i dettagli del profilo per ogni utente
+            const promises = users.map(user => 
+                fetch(`${API_URL}/api/user/${user.name}/profile`)
+                    .then(res => res.json())
+                    .catch(err => {
+                        console.error(`Errore caricamento ${user.name}:`, err);
+                        return { name: user.name, current_savings: 0 };
+                    })
+            );
 
-        const results = await Promise.all(promises);
-        setUsersData(results);
+            const results = await Promise.all(promises);
+            setUsersData(results);
+        } catch (err) {
+            console.error('Errore nel caricamento degli utenti:', err);
+            setUsersData([]);
+        }
     };
 
     const handleUserClick = (userName) => {
