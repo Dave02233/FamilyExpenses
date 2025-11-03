@@ -294,9 +294,14 @@ export const Dashboard = () => {
                                 itemStyle={{ color: '#ffffff' }}
                                 cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
                             />
-                            <Bar dataKey="Davide" stackId="a" fill="#8884d8" />
-                            <Bar dataKey="Alessia" stackId="a" fill="#82ca9d" />
-                            <Bar dataKey="Chiara" stackId="a" fill="#ffc658" />
+                            {users.map((user, index) => (
+                                <Bar 
+                                    key={user}
+                                    dataKey={user}
+                                    stackId="a"
+                                    fill={categoryColors[index % categoryColors.length]}
+                                />
+                            ))}
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
