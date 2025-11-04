@@ -423,7 +423,7 @@ export const Profile = () => {
                                     if ((name === 'RisparmioPositivo' || name === 'RisparmioNegativo') && value === 0) {
                                         return null;
                                     }
-                                    return `${value}€`;
+                                    return `${Math.round(value)}€`;
                                 }}
                                 contentStyle={{
                                     backgroundColor: 'rgba(30, 30, 30, 0.95)',
