@@ -58,7 +58,7 @@ app.post('/api/incomes', (req, res) => {
 
             const user_id = userResult.rows[0].id;
             return db.query(
-                'INSERT INTO incomes (user_id, created_at amount, category, description) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+                'INSERT INTO incomes (user_id, created_at, amount, category, description) VALUES ($1, $2, $3, $4, $5) RETURNING *',
                 [user_id, created_at, amount, category, description]
             );
         })
