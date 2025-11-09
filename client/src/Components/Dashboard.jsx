@@ -4,7 +4,26 @@ import styles from './Styles/Dashboard.module.css';
 import { API_URL } from '../config';
 
 const categoryColors = [
-    '#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c', '#d084d0'
+    '#8884d8', // Viola
+    '#82ca9d', // Verde chiaro
+    '#ffc658', // Giallo
+    '#ff8042', // Arancione
+    '#a4de6c', // Verde lime
+    '#d084d0', // Rosa
+    '#ff6b6b', // Rosso chiaro
+    '#4ecdc4', // Turchese
+    '#45b7d1', // Azzurro
+    '#96ceb4', // Verde acqua
+    '#fbac91', // Pesca
+    '#d4a5a5', // Rosa antico
+    '#9b6b9b', // Viola scuro
+    '#c3a6ff', // Lavanda
+    '#ffd93d', // Giallo oro
+    '#ff9a8b', // Corallo
+    '#98ddca', // Menta
+    '#d4afb9', // Rosa polvere
+    '#7ec4cf', // Azzurro chiaro
+    '#9eb23b'  // Verde oliva
 ];
 
 const formatCurrency = (value) => `${value}€`;
@@ -312,7 +331,7 @@ export const Dashboard = () => {
                         <span className={styles.ChartSubtitle}>Distribuzione per categoria</span>
                     </div>
                     <ResponsiveContainer width="100%" height={400}>
-                        <PieChart margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+                        <PieChart margin={{ top: 5, right: 5, bottom: 0, left: 5 }}>
                             <Pie 
                                 data={categoryData} 
                                 dataKey="value" 
@@ -321,30 +340,17 @@ export const Dashboard = () => {
                                 innerRadius="25%" 
                                 outerRadius="55%" 
                                 animationDuration={1000}
-                                label={({ cx, cy, midAngle, outerRadius, name, percent }) => {
-                                    const RADIAN = Math.PI / 180;
-                                    const radius = outerRadius + 15;
-                                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                                    return (
-                                        <text 
-                                            x={x} 
-                                            y={y} 
-                                            fill="white" 
-                                            textAnchor={x > cx ? 'start' : 'end'} 
-                                            dominantBaseline="central"
-                                            fontSize={chartFontSize.label}
-                                        >
-                                            {`${name} ${(percent * 100).toFixed(0)}%`}
-                                        </text>
-                                    );
-                                }}
-                                labelLine={{ stroke: 'rgba(255,255,255,0.3)', strokeWidth: 1 }}
                             >
                                 {categoryData.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.fill} stroke="rgba(255,255,255,0.1)" strokeWidth={2} />
                                 ))}
                             </Pie>
+                            <text x="50%" y="48%" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={chartFontSize.label}>
+                                Totale
+                            </text>
+                            <text x="50%" y="52%" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={chartFontSize.smallLabel} fontWeight={600}>
+                                {formatCurrency(categoryData.reduce((sum, e) => sum + (e.value || 0), 0))}
+                            </text>
                             <Tooltip 
                                 formatter={(value, name) => [formatCurrency(value), name]}
                                 contentStyle={{
@@ -359,6 +365,19 @@ export const Dashboard = () => {
                             />
                         </PieChart>
                     </ResponsiveContainer>
+                    <div className={styles.ChartLegend}>
+                        {categoryData.map((entry, index) => (
+                            <div key={index} className={styles.LegendItem}>
+                                <div className={styles.LegendColor} style={{ backgroundColor: entry.fill }}></div>
+                                <div className={styles.LegendText}>
+                                    <span className={styles.LegendLabel}>{entry.name}</span>
+                                    <span className={styles.LegendValue}>
+                                        {formatCurrency(entry.value)} ({((entry.value / categoryData.reduce((sum, e) => sum + e.value, 0)) * 100).toFixed(0)}%)
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
 
                     {/* Pie charts per utente */}
                     <div className={styles.UserPieChartsContainer}>

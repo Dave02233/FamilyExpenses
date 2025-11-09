@@ -97,6 +97,54 @@
     border-color: rgba(255, 255, 255, 0.3);
 }
 
+.ChartLegend {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.LegendItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.LegendItem:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.LegendColor {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.LegendText {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.LegendLabel {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+}
+
+.LegendValue {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
 .FilterSelect:focus {
     border-color: #8884d8;
     box-shadow: 0 0 0 2px rgba(136, 132, 216, 0.2);
