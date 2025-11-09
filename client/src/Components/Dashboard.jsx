@@ -330,15 +330,15 @@ export const Dashboard = () => {
                         <h2>Categorie delle spese</h2>
                         <span className={styles.ChartSubtitle}>Distribuzione per categoria</span>
                     </div>
-                    <ResponsiveContainer width="100%" height={400}>
+                    <ResponsiveContainer width="100%" height={300}>
                         <PieChart margin={{ top: 5, right: 5, bottom: 0, left: 5 }}>
                             <Pie 
                                 data={categoryData} 
                                 dataKey="value" 
                                 nameKey="name" 
                                 cx="50%"  
-                                innerRadius="25%" 
-                                outerRadius="55%" 
+                                innerRadius="55%" 
+                                outerRadius="85%" 
                                 animationDuration={1000}
                             >
                                 {categoryData.map((entry, index) => (
