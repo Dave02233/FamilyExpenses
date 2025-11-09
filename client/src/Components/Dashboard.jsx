@@ -394,8 +394,8 @@ export const Dashboard = () => {
                                             nameKey="name" 
                                             cx="50%"  
                                             cy="50%"
-                                            innerRadius="35%" 
-                                            outerRadius="55%" 
+                                            innerRadius="25%" 
+                                            outerRadius="45%" 
                                             animationDuration={1000}
                                             label={({ cx, cy, midAngle, outerRadius, name, percent }) => {
                                                 const RADIAN = Math.PI / 180;
