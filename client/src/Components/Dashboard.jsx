@@ -349,7 +349,7 @@ export const Dashboard = () => {
                                 Totale
                             </text>
                             <text x="50%" y="52%" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={chartFontSize.smallLabel} fontWeight={600}>
-                                {formatCurrency(categoryData.reduce((sum, e) => sum + (e.value || 0), 0))}
+                                {formatCurrency(categoryData.reduce((sum, e) => sum + (e.value.toFixed(0) || 0), 0))}
                             </text>
                             <Tooltip 
                                 formatter={(value, name) => [formatCurrency(value), name]}
