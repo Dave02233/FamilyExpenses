@@ -72,6 +72,7 @@ export const Dashboard = () => {
     const [categoryData, setCategoryData] = useState([]);
     const [userCategoryData, setUserCategoryData] = useState({});
     const [isScrolling, setIsScrolling] = useState(false);
+    const [expandedUserLegend, setExpandedUserLegend] = useState({});
 
     const fetchMonthlyData = useCallback(async () => {
         try {
@@ -295,66 +296,87 @@ export const Dashboard = () => {
         [categoryData, totalCategoryValue]
     );
 
+    const userPieChartCells = useMemo(() => {
+        const cells = {};
+        users.forEach(user => {
+            cells[user] = (userCategoryData[user] || []).map((entry, index) => (
+                <Cell key={`cell-${user}-${index}`} fill={entry.fill} stroke="rgba(255,255,255,0.1)" strokeWidth={2} />
+            ));
+        });
+        return cells;
+    }, [users, userCategoryData]);
+
     const userPieCharts = useMemo(() => 
-        users.map((user) => (
-            <div key={user} className={styles.SmallPieChartContainer}>
-                <div className={styles.ChartHeader}>
-                    <h3>{user}</h3>
-                </div>
-                <ResponsiveContainer width="100%" height={340}>
-                    <PieChart>
-                        <Pie 
-                            data={userCategoryData[user] || []} 
-                            dataKey="value" 
-                            nameKey="name" 
-                            cx="50%"  
-                            cy="50%"
-                            innerRadius="25%" 
-                            outerRadius="45%" 
-                            animationDuration={800}
-                            isAnimationActive={!isScrolling}
-                            label={({ cx, cy, midAngle, outerRadius, name, percent }) => {
-                                const RADIAN = Math.PI / 180;
-                                const radius = outerRadius + 15;
-                                const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                                const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                                return (
-                                    <text 
-                                        x={x} 
-                                        y={y} 
-                                        fill="white" 
-                                        textAnchor={x > cx ? 'start' : 'end'} 
-                                        dominantBaseline="central"
-                                        fontSize={chartFontSize.smallLabel}
-                                    >
-                                        {`${name} ${(percent * 100).toFixed(0)}%`}
-                                    </text>
-                                );
-                            }}
-                            labelLine={{ stroke: 'rgba(255,255,255,0.3)', strokeWidth: 1 }}
+        users.map((user) => {
+            const userData = userCategoryData[user] || [];
+            const userTotal = userData.reduce((sum, item) => sum + item.value, 0);
+            
+            return (
+                <div key={user} className={styles.SmallPieChartContainer}>
+                    <div className={styles.ChartHeader}>
+                        <h3>{user}</h3>
+                    </div>
+                    <ResponsiveContainer width="100%" height={340}>
+                        <PieChart>
+                            <Pie 
+                                data={userData} 
+                                dataKey="value" 
+                                nameKey="name" 
+                                cx="50%"  
+                                cy="50%"
+                                innerRadius="35%" 
+                                outerRadius="75%" 
+                                animationDuration={800}
+                                isAnimationActive={!isScrolling}
+                            >
+                                {userPieChartCells[user]}
+                            </Pie>
+                            <text x="50%" y="48%" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={chartFontSize.smallLabel}>
+                                Totale
+                            </text>
+                            <text x="50%" y="52%" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={chartFontSize.smallLabel} fontWeight={600}>
+                                {formatCurrency(userTotal)}
+                            </text>
+                            <Tooltip 
+                                formatter={(value, name) => [formatCurrency(value), name]}
+                                contentStyle={{
+                                    backgroundColor: 'rgba(30, 30, 30, 0.95)',
+                                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                                    borderRadius: '8px',
+                                    color: '#ffffff',
+                                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+                                }}
+                                labelStyle={{ color: '#ffffff' }}
+                                itemStyle={{ color: '#ffffff' }}
+                                isAnimationActive={false}
+                            />
+                        </PieChart>
+                    </ResponsiveContainer>
+                    <div className={styles.ChartLegend}>
+                        <button 
+                            className={styles.LegendToggle}
+                            onClick={() => setExpandedUserLegend(prev => ({ ...prev, [user]: !prev[user] }))}
                         >
-                            {(userCategoryData[user] || []).map((entry, index) => (
-                                <Cell key={`cell-${user}-${index}`} fill={entry.fill} stroke="rgba(255,255,255,0.1)" strokeWidth={2} />
+                            {expandedUserLegend[user] ? '▼' : '▶'} Categorie ({userData.length})
+                        </button>
+                        <div className={`${styles.LegendContent} ${expandedUserLegend[user] ? styles.LegendExpanded : ''}`}>
+                            {userData.map((entry, index) => (
+                                <div key={index} className={styles.LegendItem}>
+                                    <div className={styles.LegendColor} style={{ backgroundColor: entry.fill }}></div>
+                                    <div className={styles.LegendText}>
+                                        <span className={styles.LegendLabel}>{entry.name}</span>
+                                        <span className={styles.LegendValue}>
+                                            {formatCurrency(entry.value)} ({userTotal > 0 ? ((entry.value / userTotal) * 100).toFixed(0) : 0}%)
+                                        </span>
+                                    </div>
+                                </div>
                             ))}
-                        </Pie>
-                        <Tooltip 
-                            formatter={(value, name) => [formatCurrency(value), name]}
-                            contentStyle={{
-                                backgroundColor: 'rgba(30, 30, 30, 0.95)',
-                                border: '1px solid rgba(255, 255, 255, 0.2)',
-                                borderRadius: '8px',
-                                color: '#ffffff',
-                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
-                            }}
-                            labelStyle={{ color: '#ffffff' }}
-                            itemStyle={{ color: '#ffffff' }}
-                            isAnimationActive={false}
-                        />
-                    </PieChart>
-                </ResponsiveContainer>
-            </div>
-        )),
-        [users, userCategoryData, isScrolling, chartFontSize.smallLabel]
+                        </div>
+                    </div>
+                </div>
+            );
+        }),
+        [users, userCategoryData, isScrolling, userPieChartCells, expandedUserLegend]
     );
 
     return (

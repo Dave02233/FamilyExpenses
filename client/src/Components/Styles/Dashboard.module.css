@@ -162,6 +162,14 @@
     white-space: nowrap;
 }
 
+.LegendToggle {
+    display: none;
+}
+
+.LegendContent {
+    display: contents;
+}
+
 .FilterSelect:focus {
     border-color: #8884d8;
     box-shadow: 0 0 0 2px rgba(136, 132, 216, 0.2);
@@ -325,6 +333,38 @@
     .UserPieChartsContainer {
         gap: 1rem;
     }
+
+    .SmallPieChartContainer .LegendToggle {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.5rem;
+        color: white;
+        font-size: 0.9rem;
+        cursor: pointer;
+        text-align: left;
+        transition: background 0.2s ease;
+        margin-bottom: 0.5rem;
+    }
+
+    .SmallPieChartContainer .LegendToggle:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .SmallPieChartContainer .LegendContent {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .SmallPieChartContainer .LegendExpanded {
+        max-height: 500px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -365,6 +405,38 @@
 
     .SmallPieChartContainer .ChartHeader h3 {
         font-size: 1rem;
+    }
+
+    .SmallPieChartContainer .LegendToggle {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.5rem;
+        color: white;
+        font-size: 0.9rem;
+        cursor: pointer;
+        text-align: left;
+        transition: background 0.2s ease;
+        margin-bottom: 0.5rem;
+    }
+
+    .SmallPieChartContainer .LegendToggle:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .SmallPieChartContainer .LegendContent {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .SmallPieChartContainer .LegendExpanded {
+        max-height: 500px;
     }
 
     .FilterContainer {
