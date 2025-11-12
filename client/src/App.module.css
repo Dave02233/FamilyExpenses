@@ -260,3 +260,25 @@
         display: none;
     }
 }
+
+
+
+* {
+  scrollbar-color: #104365 transparent; /* Firefox */
+}
+
+/* WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #104365;
+  border-radius: 6px;
+  border: 3px solid #f0f0f0;
+}
