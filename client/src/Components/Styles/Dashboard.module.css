@@ -7,6 +7,9 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    
+    /* Ottimizzazione rendering */
+    contain: layout style;
 }
 
 .BarChartContainer {
@@ -24,8 +27,15 @@
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    
+    /* Rimuovi backdrop-filter costoso, usa solo background */
+    /* -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px); */
+    
+    /* Ottimizzazioni GPU */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .ChartHeader {
@@ -53,6 +63,10 @@
 .BarChartContainer .ResponsiveContainer {
     flex: 1;
     min-height: 0;
+    
+    /* Ottimizzazione rendering grafico */
+    will-change: contents;
+    contain: layout;
 }
 
 /* Filter Styles */
@@ -112,7 +126,10 @@
     padding: 0.5rem;
     background: rgba(255, 255, 255, 0.03);
     border-radius: 0.5rem;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease;
+    
+    /* Ottimizzazione hover */
+    will-change: background;
 }
 
 .LegendItem:hover {
@@ -213,9 +230,17 @@
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    
+    /* Rimuovi backdrop-filter costoso */
+    /* -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px); */
+    
     overflow: visible;
+    
+    /* Ottimizzazioni GPU */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .UserPieChartsContainer {
@@ -237,13 +262,17 @@
     padding: 1.5rem 0;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     flex-shrink: 0;
     overflow: visible;
+    
+    /* Ottimizzazioni GPU */
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 .SmallPieChartContainer:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) translateZ(0);
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
 }
 
@@ -363,17 +392,16 @@
     }
 }
 
-/* Animazioni e effetti hover */
+/* Animazioni e effetti hover - ottimizzati */
 .BarChartContainer:hover, .PieChartContainer:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) translateZ(0);
     box-shadow: 
         0 12px 40px rgba(0, 0, 0, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    transition: all 0.3s ease;
 }
 
 .BarChartContainer, .PieChartContainer {
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Stili responsive per i grafici */
@@ -385,5 +413,22 @@
     /* Rimuovi hover effects su touch devices */
     .BarChartContainer:hover, .PieChartContainer:hover {
         transform: none;
+    }
+}
+
+/* Ottimizzazioni per scorrimento veloce */
+@media (prefers-reduced-motion: no-preference) {
+    .BarChartContainer, .PieChartContainer, .SmallPieChartContainer {
+        /* Abilita compositing layer per smooth scroll */
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* Riduce animazioni su dispositivi con prestazioni limitate */
+@media (prefers-reduced-motion: reduce) {
+    .BarChartContainer, .PieChartContainer, .SmallPieChartContainer,
+    .LegendItem, .FilterSelect, .DateInput {
+        transition: none !important;
+        animation: none !important;
     }
 }

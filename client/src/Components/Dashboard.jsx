@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import styles from './Styles/Dashboard.module.css';
 import { API_URL } from '../config';
@@ -28,21 +28,30 @@ const categoryColors = [
 
 const formatCurrency = (value) => `${value.toFixed(0)}€`;
 
-// Hook personalizzato per font size responsive dei grafici
 const useChartFontSize = () => {
-    const [fontSize, setFontSize] = useState({
-        axis: window.innerWidth >= 992 ? '1rem' : '0.75rem',
-        label: window.innerWidth >= 992 ? '1rem' : '0.75rem',
-        smallLabel: window.innerWidth >= 992 ? '0.8rem' : '0.7rem'
+    const [fontSize, setFontSize] = useState(() => {
+        const isLargeScreen = window.innerWidth >= 992;
+        return {
+            axis: isLargeScreen ? '1rem' : '0.75rem',
+            label: isLargeScreen ? '1rem' : '0.75rem',
+            smallLabel: isLargeScreen ? '0.8rem' : '0.7rem'
+        };
     });
 
     useEffect(() => {
         const handleResize = () => {
             const isLargeScreen = window.innerWidth >= 992;
-            setFontSize({
+            const newFontSize = {
                 axis: isLargeScreen ? '1rem' : '0.75rem',
                 label: isLargeScreen ? '1rem' : '0.75rem',
                 smallLabel: isLargeScreen ? '0.8rem' : '0.7rem'
+            };
+            
+            setFontSize(prev => {
+                if (prev.smallLabel !== newFontSize.smallLabel) {
+                    return newFontSize;
+                }
+                return prev;
             });
         };
 
@@ -62,6 +71,7 @@ export const Dashboard = () => {
     const [monthlyData, setMonthlyData] = useState([]);
     const [categoryData, setCategoryData] = useState([]);
     const [userCategoryData, setUserCategoryData] = useState({});
+    const [isScrolling, setIsScrolling] = useState(false);
 
     const fetchMonthlyData = useCallback(async () => {
         try {
@@ -69,11 +79,10 @@ export const Dashboard = () => {
             const params = new URLSearchParams();
             
             if (filterType === 'custom' && startDate && endDate) {
-                // Converti il formato YYYY-MM in date range
                 const start = new Date(startDate + '-01');
                 const end = new Date(endDate + '-01');
                 end.setMonth(end.getMonth() + 1);
-                end.setDate(0); // Ultimo giorno del mese
+                end.setDate(0);
                 
                 params.append('startDate', start.toISOString());
                 params.append('endDate', end.toISOString());
@@ -92,7 +101,6 @@ export const Dashboard = () => {
             const response = await fetch(url);
             const data = await response.json();
             
-            // Trasforma i dati in formato per recharts
             const transformedData = data.reduce((acc, item) => {
                 const existing = acc.find(d => d.name === item.name);
                 if (existing) {
@@ -128,7 +136,6 @@ export const Dashboard = () => {
             } else if (filterType !== 'custom') {
                 const months = filterType === '1mese' ? 1 : filterType === '3mesi' ? 3 : 12;
                 const startFilter = new Date();
-                // Vai al primo giorno del mese corrente, poi torna indietro di (months - 1) mesi
                 startFilter.setDate(1);
                 startFilter.setMonth(startFilter.getMonth() - (months - 1));
                 startFilter.setHours(0, 0, 0, 0);
@@ -222,6 +229,23 @@ export const Dashboard = () => {
         }
     }, [fetchMonthlyData, fetchCategoryData, fetchUserCategoryData, users]);
 
+    useEffect(() => {
+        let scrollTimer;
+        const handleScroll = () => {
+            setIsScrolling(true);
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(() => {
+                setIsScrolling(false);
+            }, 150);
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            clearTimeout(scrollTimer);
+        };
+    }, []);
+
     const handleFilterChange = (e) => {
         setFilterType(e.target.value);
         if (e.target.value !== 'custom') {
@@ -229,6 +253,110 @@ export const Dashboard = () => {
             setEndDate('');
         }
     };
+
+    const barComponents = useMemo(() => 
+        users.map((user, index) => (
+            <Bar 
+                key={user}
+                dataKey={user}
+                stackId="a"
+                fill={categoryColors[index % categoryColors.length]}
+                isAnimationActive={!isScrolling}
+                animationDuration={800}
+            />
+        )),
+        [users, isScrolling]
+    );
+
+    const totalCategoryValue = useMemo(() => 
+        categoryData.reduce((sum, e) => sum + (e.value || 0), 0),
+        [categoryData]
+    );
+
+    const categoryPieCells = useMemo(() => 
+        categoryData.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={entry.fill} stroke="rgba(255,255,255,0.1)" strokeWidth={2} />
+        )),
+        [categoryData]
+    );
+
+    const categoryLegend = useMemo(() => 
+        categoryData.map((entry, index) => (
+            <div key={index} className={styles.LegendItem}>
+                <div className={styles.LegendColor} style={{ backgroundColor: entry.fill }}></div>
+                <div className={styles.LegendText}>
+                    <span className={styles.LegendLabel}>{entry.name}</span>
+                    <span className={styles.LegendValue}>
+                        {formatCurrency(entry.value)} ({((entry.value / totalCategoryValue) * 100).toFixed(0)}%)
+                    </span>
+                </div>
+            </div>
+        )),
+        [categoryData, totalCategoryValue]
+    );
+
+    const userPieCharts = useMemo(() => 
+        users.map((user) => (
+            <div key={user} className={styles.SmallPieChartContainer}>
+                <div className={styles.ChartHeader}>
+                    <h3>{user}</h3>
+                </div>
+                <ResponsiveContainer width="100%" height={340}>
+                    <PieChart>
+                        <Pie 
+                            data={userCategoryData[user] || []} 
+                            dataKey="value" 
+                            nameKey="name" 
+                            cx="50%"  
+                            cy="50%"
+                            innerRadius="25%" 
+                            outerRadius="45%" 
+                            animationDuration={800}
+                            isAnimationActive={!isScrolling}
+                            label={({ cx, cy, midAngle, outerRadius, name, percent }) => {
+                                const RADIAN = Math.PI / 180;
+                                const radius = outerRadius + 15;
+                                const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                                const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                                return (
+                                    <text 
+                                        x={x} 
+                                        y={y} 
+                                        fill="white" 
+                                        textAnchor={x > cx ? 'start' : 'end'} 
+                                        dominantBaseline="central"
+                                        fontSize={chartFontSize.smallLabel}
+                                    >
+                                        {`${name} ${(percent * 100).toFixed(0)}%`}
+                                    </text>
+                                );
+                            }}
+                            labelLine={{ stroke: 'rgba(255,255,255,0.3)', strokeWidth: 1 }}
+                        >
+                            {(userCategoryData[user] || []).map((entry, index) => (
+                                <Cell key={`cell-${user}-${index}`} fill={entry.fill} stroke="rgba(255,255,255,0.1)" strokeWidth={2} />
+                            ))}
+                        </Pie>
+                        <Tooltip 
+                            formatter={(value, name) => [formatCurrency(value), name]}
+                            contentStyle={{
+                                backgroundColor: 'rgba(30, 30, 30, 0.95)',
+                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                borderRadius: '8px',
+                                color: '#ffffff',
+                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+                            }}
+                            labelStyle={{ color: '#ffffff' }}
+                            itemStyle={{ color: '#ffffff' }}
+                            isAnimationActive={false}
+                        />
+                    </PieChart>
+                </ResponsiveContainer>
+            </div>
+        )),
+        [users, userCategoryData, isScrolling, chartFontSize.smallLabel]
+    );
+
     return (
         <>
             <div className={styles.ChartContainer}>
@@ -312,15 +440,9 @@ export const Dashboard = () => {
                                 labelStyle={{ color: '#ffffff' }}
                                 itemStyle={{ color: '#ffffff' }}
                                 cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                                isAnimationActive={false}
                             />
-                            {users.map((user, index) => (
-                                <Bar 
-                                    key={user}
-                                    dataKey={user}
-                                    stackId="a"
-                                    fill={categoryColors[index % categoryColors.length]}
-                                />
-                            ))}
+                            {barComponents}
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
@@ -339,17 +461,16 @@ export const Dashboard = () => {
                                 cx="50%"  
                                 innerRadius="55%" 
                                 outerRadius="85%" 
-                                animationDuration={1000}
+                                animationDuration={800}
+                                isAnimationActive={!isScrolling}
                             >
-                                {categoryData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.fill} stroke="rgba(255,255,255,0.1)" strokeWidth={2} />
-                                ))}
+                                {categoryPieCells}
                             </Pie>
                             <text x="50%" y="48%" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={chartFontSize.label}>
                                 Totale
                             </text>
                             <text x="50%" y="52%" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={chartFontSize.smallLabel} fontWeight={600}>
-                                {formatCurrency(categoryData.reduce((sum, e) => sum + (e.value || 0), 0))}
+                                {formatCurrency(totalCategoryValue)}
                             </text>
                             <Tooltip 
                                 formatter={(value, name) => [formatCurrency(value), name]}
@@ -362,81 +483,16 @@ export const Dashboard = () => {
                                 }}
                                 labelStyle={{ color: '#ffffff' }}
                                 itemStyle={{ color: '#ffffff' }}
+                                isAnimationActive={false}
                             />
                         </PieChart>
                     </ResponsiveContainer>
                     <div className={styles.ChartLegend}>
-                        {categoryData.map((entry, index) => (
-                            <div key={index} className={styles.LegendItem}>
-                                <div className={styles.LegendColor} style={{ backgroundColor: entry.fill }}></div>
-                                <div className={styles.LegendText}>
-                                    <span className={styles.LegendLabel}>{entry.name}</span>
-                                    <span className={styles.LegendValue}>
-                                        {formatCurrency(entry.value)} ({((entry.value / categoryData.reduce((sum, e) => sum + e.value, 0)) * 100).toFixed(0)}%)
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
+                        {categoryLegend}
                     </div>
 
-                    {/* Pie charts per utente */}
                     <div className={styles.UserPieChartsContainer}>
-                        {users.map((user) => (
-                            <div key={user} className={styles.SmallPieChartContainer}>
-                                <div className={styles.ChartHeader}>
-                                    <h3>{user}</h3>
-                                </div>
-                                <ResponsiveContainer width="100%" height={340}>
-                                    <PieChart>
-                                        <Pie 
-                                            data={userCategoryData[user] || []} 
-                                            dataKey="value" 
-                                            nameKey="name" 
-                                            cx="50%"  
-                                            cy="50%"
-                                            innerRadius="25%" 
-                                            outerRadius="45%" 
-                                            animationDuration={1000}
-                                            label={({ cx, cy, midAngle, outerRadius, name, percent }) => {
-                                                const RADIAN = Math.PI / 180;
-                                                const radius = outerRadius + 15;
-                                                const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                                                const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                                                return (
-                                                    <text 
-                                                        x={x} 
-                                                        y={y} 
-                                                        fill="white" 
-                                                        textAnchor={x > cx ? 'start' : 'end'} 
-                                                        dominantBaseline="central"
-                                                        fontSize={chartFontSize.smallLabel}
-                                                    >
-                                                        {`${name} ${(percent * 100).toFixed(0)}%`}
-                                                    </text>
-                                                );
-                                            }}
-                                            labelLine={{ stroke: 'rgba(255,255,255,0.3)', strokeWidth: 1 }}
-                                        >
-                                            {(userCategoryData[user] || []).map((entry, index) => (
-                                                <Cell key={`cell-${user}-${index}`} fill={entry.fill} stroke="rgba(255,255,255,0.1)" strokeWidth={2} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip 
-                                            formatter={(value, name) => [formatCurrency(value), name]}
-                                            contentStyle={{
-                                                backgroundColor: 'rgba(30, 30, 30, 0.95)',
-                                                border: '1px solid rgba(255, 255, 255, 0.2)',
-                                                borderRadius: '8px',
-                                                color: '#ffffff',
-                                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
-                                            }}
-                                            labelStyle={{ color: '#ffffff' }}
-                                            itemStyle={{ color: '#ffffff' }}
-                                        />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-                        ))}
+                        {userPieCharts}
                     </div>
                 </div>
             </div>
