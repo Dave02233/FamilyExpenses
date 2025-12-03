@@ -4,7 +4,7 @@ import { useParams, NavLink } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import { Area, Bar, ReferenceLine, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, ComposedChart } from 'recharts';
 import styles from './Styles/Profile.module.css';
-import { API_URL } from '../config';
+import { useApiConfig } from '../context/ApiConfigContext';
 
 // Hook personalizzato per font size responsive dei grafici
 const useChartFontSize = () => {
@@ -30,6 +30,7 @@ const useChartFontSize = () => {
 export const Profile = () => {
     const { user } = useParams();
     const chartFontSize = useChartFontSize();
+    const { apiBaseUrl } = useApiConfig();
 
     const [showPopup, setShowPopup] = useState(false);
     const [transactionType, setTransactionType] = useState('');
@@ -48,27 +49,27 @@ export const Profile = () => {
 
     const fetchProfileData = useCallback(async () => {
         try {
-            const response = await fetch(`${API_URL}/api/user/${user}/profile`);
+            const response = await fetch(`${apiBaseUrl}/api/user/${user}/profile`);
             const data = await response.json();
             setProfileData(data);
         } catch (error) {
             console.error('Errore nel caricamento del profilo:', error);
         }
-    }, [user]);
+    }, [user, apiBaseUrl]);
 
     const fetchRecentTransactions = useCallback(async () => {
         try {
-            const response = await fetch(`${API_URL}/api/user/${user}/recent-transactions?limit=30`);
+            const response = await fetch(`${apiBaseUrl}/api/user/${user}/recent-transactions?limit=30`);
             const data = await response.json();
             setRecentTransactions(data);
         } catch (error) {
             console.error('Errore nel caricamento delle transazioni:', error);
         }
-    }, [user]);
+    }, [user, apiBaseUrl]);
 
     const fetchMonthlyIncomeExpense = useCallback(async () => {
         try {
-            let url = `${API_URL}/api/user/${user}/monthly-income-expense`;
+            let url = `${apiBaseUrl}/api/user/${user}/monthly-income-expense`;
             const params = new URLSearchParams();
             
             if (filterType === 'custom' && startDate && endDate) {
@@ -128,7 +129,7 @@ export const Profile = () => {
         } catch (error) {
             console.error('Errore nel caricamento dei dati mensili:', error);
         }
-    }, [user, filterType, startDate, endDate]);
+    }, [user, filterType, startDate, endDate, apiBaseUrl]);
 
     useEffect(() => {
         fetchProfileData();
@@ -175,7 +176,7 @@ export const Profile = () => {
         };
 
         try {
-            const response = await fetch(`${API_URL}${endpoint}`, {
+            const response = await fetch(`${apiBaseUrl}${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -213,7 +214,7 @@ export const Profile = () => {
         }
 
         try {
-            const response = await fetch(`${API_URL}/api/user/${user}/savings-goal`, {
+            const response = await fetch(`${apiBaseUrl}/api/user/${user}/savings-goal`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -247,7 +248,7 @@ export const Profile = () => {
 
         try {
             const endpoint = transactionType === 'income' ? '/api/incomes' : '/api/expenses';
-            const response = await fetch(`${API_URL}${endpoint}/${transactionId}`, {
+            const response = await fetch(`${apiBaseUrl}${endpoint}/${transactionId}`, {
                 method: 'DELETE',
             });
 

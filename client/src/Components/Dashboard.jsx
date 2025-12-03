@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import styles from './Styles/Dashboard.module.css';
-import { API_URL } from '../config';
+import { useApiConfig } from '../context/ApiConfigContext';
 
 const categoryColors = [
     '#8884d8', // Viola
@@ -73,10 +73,11 @@ export const Dashboard = () => {
     const [userCategoryData, setUserCategoryData] = useState({});
     const [isScrolling, setIsScrolling] = useState(false);
     const [expandedUserLegend, setExpandedUserLegend] = useState({});
+    const { apiBaseUrl } = useApiConfig();
 
     const fetchMonthlyData = useCallback(async () => {
         try {
-            let url = `${API_URL}/api/expenses/monthly`;
+            let url = `${apiBaseUrl}/api/expenses/monthly`;
             const params = new URLSearchParams();
             
             if (filterType === 'custom' && startDate && endDate) {
@@ -119,11 +120,11 @@ export const Dashboard = () => {
         } catch (error) {
             console.error('Errore nel caricamento dei dati mensili:', error);
         }
-    }, [filterType, startDate, endDate]);
+    }, [filterType, startDate, endDate, apiBaseUrl]);
 
     const fetchCategoryData = useCallback(async () => {
         try {
-            let url = `${API_URL}/api/expenses/by-category`;
+            let url = `${apiBaseUrl}/api/expenses/by-category`;
             const params = new URLSearchParams();
             
             if (filterType === 'custom' && startDate && endDate) {
@@ -160,7 +161,7 @@ export const Dashboard = () => {
         } catch (error) {
             console.error('Errore nel caricamento dei dati per categoria:', error);
         }
-    }, [filterType, startDate, endDate]);
+    }, [filterType, startDate, endDate, apiBaseUrl]);
 
     const fetchUserCategoryData = useCallback(async () => {
         if (users.length === 0) return;
@@ -168,7 +169,7 @@ export const Dashboard = () => {
         try {
             const userData = {};
             for (const user of users) {
-                let url = `${API_URL}/api/expenses/by-category/${user}`;
+                let url = `${apiBaseUrl}/api/expenses/by-category/${user}`;
                 const params = new URLSearchParams();
                 
                 if (filterType === 'custom' && startDate && endDate) {
@@ -205,18 +206,18 @@ export const Dashboard = () => {
         } catch (error) {
             console.error('Errore nel caricamento dei dati utente per categoria:', error);
         }
-    }, [filterType, startDate, endDate, users]);
+    }, [filterType, startDate, endDate, users, apiBaseUrl]);
 
     const fetchUsers = useCallback(async () => {
         try {
-            const response = await fetch(`${API_URL}/api/users`);
+            const response = await fetch(`${apiBaseUrl}/api/users`);
             const data = await response.json();
             setUsers(data.map(user => user.name));
         } catch (error) {
             console.error('Errore nel caricamento degli utenti:', error);
             setUsers([]);
         }
-    }, []);
+    }, [apiBaseUrl]);
 
     useEffect(() => {
         fetchUsers();

@@ -1,30 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Styles/SideBar.module.css'
-import { API_URL } from '../config';
+import { useApiConfig } from '../context/ApiConfigContext';
 
 export const SideBar = ({ open, click }) => {
 
     const [visibility, setVisibility] = useState(false);
     const [usersData, setUsersData] = useState([]);
     const navigate = useNavigate();
+    const { apiBaseUrl } = useApiConfig();
 
     useEffect(() => {
         setVisibility(open);
         if (open) {
             fetchUsersData();
         }
-    }, [open]);
+    }, [open, apiBaseUrl]);
 
     const fetchUsersData = async () => {
         try {
             // Prima otteniamo la lista degli utenti dal database
-            const response = await fetch(`${API_URL}/api/users`);
+            const response = await fetch(`${apiBaseUrl}/api/users`);
             const users = await response.json();
             
             // Poi otteniamo i dettagli del profilo per ogni utente
             const promises = users.map(user => 
-                fetch(`${API_URL}/api/user/${user.name}/profile`)
+                fetch(`${apiBaseUrl}/api/user/${user.name}/profile`)
                     .then(res => res.json())
                     .catch(err => {
                         console.error(`Errore caricamento ${user.name}:`, err);

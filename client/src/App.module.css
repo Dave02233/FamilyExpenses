@@ -168,6 +168,23 @@
     gap: 0.2rem;
 }
 
+.serverStatusButton {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    align-items: stretch;
+}
+
+.serverStatusButton:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 3px;
+    border-radius: 8px;
+}
+
 .ToggleContainer h3 {
     color: white;
     font-weight: normal;
@@ -183,6 +200,17 @@
     background: rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.serverStatusButton:hover .serverStatus {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.serverUrlLabel {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.75rem;
+    text-align: center;
+    word-break: break-all;
 }
 
 .statusDot {
@@ -240,6 +268,10 @@
         width: 8px;
         height: 8px;
     }
+
+    .serverUrlLabel {
+        font-size: 0.65rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -259,12 +291,102 @@
     .statusText {
         display: none;
     }
+
+        .serverUrlLabel {
+                display: none;
+        }
 }
 
 
 
-* {
-  scrollbar-color: #104365 transparent; /* Firefox */
+@supports (scrollbar-color: #104365 transparent) {
+    * {
+        scrollbar-color: #104365 transparent; /* Firefox */
+    }
+}
+
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    padding: 1rem;
+}
+
+.modalContent {
+    background: #ffffff;
+    color: #0f172a;
+    border-radius: 16px;
+    padding: 1.5rem;
+    width: min(420px, 100%);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+}
+
+.modalContent h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.modalContent p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #475569;
+}
+
+.modalInput {
+    width: 100%;
+    border: 1px solid #cbd5f5;
+    border-radius: 10px;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.95rem;
+}
+
+.modalInput:focus {
+    outline: 2px solid #104365;
+    border-color: transparent;
+}
+
+.modalError {
+    color: #dc2626;
+    font-size: 0.85rem;
+    margin: 0.5rem 0 0;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.primaryButton,
+.secondaryButton {
+    border: none;
+    border-radius: 10px;
+    padding: 0.6rem 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.primaryButton {
+    background: #104365;
+    color: #fff;
+}
+
+.primaryButton:hover {
+    background: #0b2e44;
+}
+
+.secondaryButton {
+    background: rgba(15, 23, 42, 0.08);
+    color: #0f172a;
+}
+
+.secondaryButton:hover {
+    background: rgba(15, 23, 42, 0.15);
 }
 
 /* WebKit (Chrome, Safari, Edge) */
