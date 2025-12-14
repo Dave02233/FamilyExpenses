@@ -26,14 +26,16 @@ Applicazione full-stack per gestire le spese familiari con interfaccia React, AP
    - Client: creare `client/.env` con `VITE_API_URL=http://localhost:3001` (o l'host dell'API).
 
 ## Avvio in locale
-1. Avviare l'API:
-   ```powershell
-   cd server; npm run dev
-   ```
+1. Avviare l'API (consigliato in modalità produzione con pm2):
+   ``bash
+   cd server
+   pm2 start app.js --name expenses-api
+   ``
 2. Avviare il front-end in un altro terminale:
-   ```powershell
-   cd client; npm run dev
-   ```
+   ``bash
+   cd client
+   npm run dev
+   ``
 3. Aprire l'URL fornito da Vite (tipicamente http://localhost:5173).
 
 ## Modifica dell'URL API
@@ -41,5 +43,7 @@ Cliccare sul badge di stato server nell'header per aprire il modal, inserire il 
 
 ## Distribuzione
 - Build del client: `cd client; npm run build`, quindi servire il contenuto della cartella `dist`.
-- Esecuzione del server: `cd server; npm start` con le variabili d'ambiente configurate.
-- Se l'API è pubblica, configurare un proxy o un bilanciatore che gestisca HTTPS e limiti gli accessi non autorizzati.
+- Esecuzione del server: ``cd server; pm2 start app.js --name expenses-api`` con le variabili d'ambiente configurate.
+- Nel mio setup, l’API gira su un Raspberry Pi collegato alla rete locale di casa, con IP statico assegnato dal router per avere un indirizzo fisso.
+- Per l’accesso remoto utilizzo Tailscale, in modo da raggiungere il Raspberry Pi in sicurezza tramite VPN, senza esporre direttamente il servizio su Internet.
+- Se l’API è pubblica, configurare un proxy o un bilanciatore che gestisca HTTPS e limiti gli accessi non autorizzati.
